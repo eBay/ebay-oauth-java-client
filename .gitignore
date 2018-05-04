@@ -1,0 +1,24 @@
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+
+.gradle
+build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+**/.idea/workspace.xml
+**/.idea/libraries
+**/.idea/*
+
+**/target/*
+**/out/*
+
+ebay-config.yaml
+test-config.yaml
