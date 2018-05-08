@@ -58,9 +58,18 @@ public class AuthorizationCodeTest {
     public static void testSetup() throws FileNotFoundException {
         // Loading the app credentials
         CredentialLoaderTestUtil.loadAppCredentials();
+        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
 
         // Loading the test user credentials for Sandbox
         Map<String, Map<String, String>> values = CredentialLoaderTestUtil.loadUserCredentials();
+        if(!CredentialLoaderTestUtil.isUserCredentialsLoaded){
+            System.err.println("\"Please check if test-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
         String userCredentialKey = EXECUTION_ENV.equals(Environment.PRODUCTION) ? "production-user" : "sandbox-user";
         Object valuesObj = values.get(userCredentialKey);
         if (null != valuesObj && valuesObj instanceof Map) {
@@ -73,7 +82,12 @@ public class AuthorizationCodeTest {
     }
 
     @Test
-    public void testEbayConfigLoadYamlFile() throws FileNotFoundException {
+    public void testEbayConfigLoadYamlFile() {
+        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
         String credentialHelperStr = CredentialHelper.dump();
         System.out.println(credentialHelperStr);
         assertTrue(credentialHelperStr.contains("APP_ID"));
@@ -84,6 +98,15 @@ public class AuthorizationCodeTest {
 
     @Test
     public void exchangeAuthzCode() throws InterruptedException, IOException {
+        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
+        if(!CredentialLoaderTestUtil.isUserCredentialsLoaded){
+            System.err.println("\"Please check if test-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
         String url = getAuthorizationResponseUrl();
         int codeIndex = url.indexOf("code=");
         String code = null;
