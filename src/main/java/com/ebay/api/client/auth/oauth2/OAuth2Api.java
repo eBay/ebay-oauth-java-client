@@ -38,7 +38,7 @@ import static com.ebay.api.client.auth.oauth2.OAuth2Util.buildScopeForRequest;
 
 public class OAuth2Api {
     private static final Logger logger = LoggerFactory.getLogger(OAuth2Api.class);
-    private static final String CRED_SEPERATOR = ":";
+    public static final String CRED_SEPERATOR = ":";
     private static TimedCacheValue appAccessToken = null;
 
     private static class TimedCacheValue {
@@ -111,7 +111,7 @@ public class OAuth2Api {
         if (state.isPresent()) {
             sb.append("state=").append(state.get());
         }
-        logger.debug("authorize_url=" + sb.toString());
+        //TODO Logger log the string created
         return sb.toString();
     }
 

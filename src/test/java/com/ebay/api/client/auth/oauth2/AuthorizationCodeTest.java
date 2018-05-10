@@ -55,7 +55,7 @@ public class AuthorizationCodeTest {
 
     @BeforeClass
     public static void testSetup() throws FileNotFoundException {
-        // Loading the app credentials
+        //TODO: Create the file ebay-config.yaml using the ebay-config-sample.yaml before running these tests
         CredentialLoaderTestUtil.loadAppCredentials();
         if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
             System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
@@ -162,8 +162,8 @@ public class AuthorizationCodeTest {
         Thread.sleep(5000);
 
         WebElement userId = (new WebDriverWait(driver, 10))
-                .until(ExpectedConditions.visibilityOf(driver.findElement(By.name("userid"))));
-        WebElement password = driver.findElement(By.name("pass"));
+                .until(ExpectedConditions.visibilityOf(driver.findElement(By.cssSelector("input[type='text']"))));
+        WebElement password = driver.findElement(By.cssSelector("input[type='password']"));
         
         userId.sendKeys(CREDENTIAL_USERNAME);
         password.sendKeys(CREDENTIAL_PASSWORD);

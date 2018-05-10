@@ -20,5 +20,5 @@ package com.ebay.api.client.auth.oauth2.model;
 
 public enum TokenType {
     USER,
-    APPLICATION;
+    APPLICATION,;
 }
