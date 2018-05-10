@@ -30,7 +30,7 @@
     <scm>
         <connection>scm:git:git@github.com:eBay/ebay-oauth-java-client.git</connection>
         <!--<developerConnection>scm:git:ssh://github.com/eBay/ebay-oauth-java-client.git</developerConnection>-->
-        <!--<url>https://github.com/ebay/ebay-oauth-java-client</url>-->
+        <url>https://github.com/ebay/ebay-oauth-java-client</url>
         <!--<tag>HEAD</tag>-->
       <tag>HEAD</tag>
   </scm>
@@ -208,7 +208,8 @@
                 </snapshotRepository>
                 <repository>
                     <id>ossrh</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                    <!--<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
+                    <url>https://oss.sonatype.org/content/repositories/</url>
                 </repository>
             </distributionManagement>
             <build>
@@ -229,7 +230,7 @@
                         <configuration>
                             <serverId>ossrh</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
                     <plugin>
