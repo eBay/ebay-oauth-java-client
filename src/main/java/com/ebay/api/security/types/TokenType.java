@@ -20,5 +20,5 @@ package com.ebay.api.security.types;
 
 public enum TokenType {
     USER,
-    APPLICATION;
+    APPLICATION,;
 }
