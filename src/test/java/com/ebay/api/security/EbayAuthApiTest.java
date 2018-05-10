@@ -39,13 +39,18 @@ public class EbayAuthApiTest {
     private static List<String> authorizationScopesList = Arrays.asList(new String[]{"https://api.ebay.com/oauth/api_scope", "https://api.ebay.com/oauth/api_scope/sell.marketing.readonly"});
 
     @BeforeClass
-    public static void testSetup() throws FileNotFoundException {
+    public static void testSetup() {
         // Loading the app credentials
         CredentialLoaderTestUtil.loadAppCredentials();
     }
 
     @Test
     public void testGenerateAppTokenSandbox() throws IOException {
+        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
         IEbayAuthApi authApi = new EbayAuthApi();
         OAuthResponse response = authApi.getApplicationToken(Environment.SANDBOX, applicationScopesList);
         Optional<AccessToken> applicationToken = response.getAccessToken();
@@ -56,6 +61,11 @@ public class EbayAuthApiTest {
 
     @Test
     public void testGenerateAppTokenProduction() throws IOException {
+        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
         IEbayAuthApi authApi = new EbayAuthApi();
         //Only this scope is allowed for this app
         OAuthResponse response = authApi.getApplicationToken(Environment.PRODUCTION, Arrays.asList(new String[]{"https://api.ebay.com/oauth/api_scope"}));
@@ -67,6 +77,11 @@ public class EbayAuthApiTest {
 
     @Test
     public void testGenerateAuthorizationUrlSandbox() {
+        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
         IEbayAuthApi authApi = new EbayAuthApi();
         String authorizeUrl = authApi.generateUserAuthorizeUrl(Environment.SANDBOX, authorizationScopesList, Optional.of("current-page"));
         System.out.println(authorizeUrl);
@@ -75,6 +90,11 @@ public class EbayAuthApiTest {
 
     @Test
     public void testGenerateAuthorizationUrlProduction() {
+        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
         IEbayAuthApi authApi = new EbayAuthApi();
         String authorizeUrl = authApi.generateUserAuthorizeUrl(Environment.PRODUCTION, authorizationScopesList, Optional.of("current-page"));
         System.out.println(authorizeUrl);
@@ -83,6 +103,11 @@ public class EbayAuthApiTest {
 
     @Test
     public void testCheckErrorHandling() throws IOException {
+        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
         IEbayAuthApi authApi = new EbayAuthApi();
         // Attempting with incorrect scope
         OAuthResponse response = authApi.getApplicationToken(Environment.PRODUCTION, Arrays.asList(new String[]{"https://api.ebay.com/oauth/"}));
