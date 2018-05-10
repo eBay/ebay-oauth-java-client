@@ -40,7 +40,7 @@ import static com.ebay.api.security.impl.EbayAuthUtilities.buildScopeForRequest;
 
 public class EbayAuthApi implements IEbayAuthApi {
     private static final Logger logger = LoggerFactory.getLogger(EbayAuthApi.class);
-    private static final String CRED_SEPERATOR = ":";
+    public static final String CRED_SEPERATOR = ":";
     private static TimedCacheValue appAccessToken = null;
 
     private static class TimedCacheValue {
@@ -113,7 +113,7 @@ public class EbayAuthApi implements IEbayAuthApi {
         if (state.isPresent()) {
             sb.append("state=").append(state.get());
         }
-        logger.debug("authorize_url=" + sb.toString());
+        //TODO Logger log the string created
         return sb.toString();
     }
 
