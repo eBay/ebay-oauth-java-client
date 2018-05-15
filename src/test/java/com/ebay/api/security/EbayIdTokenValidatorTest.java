@@ -18,64 +18,114 @@
 
 package com.ebay.api.security;
 
+import com.ebay.api.security.impl.EbayAuthApi;
 import com.ebay.api.security.openid.jwt.EbayIdTokenValidator;
+import com.ebay.api.security.types.EbayIdToken;
+import com.ebay.api.security.types.Environment;
+import com.ebay.api.security.types.OAuthResponse;
+import com.ebay.api.security.v1.IEbayAuthApi;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.Arrays;
+import java.io.FileNotFoundException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class EbayIdTokenValidatorTest{
+import static com.ebay.api.security.CredentialLoaderTestUtil.CRED_PASSWORD;
+import static com.ebay.api.security.CredentialLoaderTestUtil.CRED_USERNAME;
+import static org.junit.Assert.*;
+
+public class EbayIdTokenValidatorTest {
+    //NOTE: Change this env to Environment.PRODUCTION to run this test in PRODUCTION
+    private static final Environment EXECUTION_ENV = Environment.PRODUCTION;
+
+    @BeforeClass
+    public static void testSetup() {
+        CredentialLoaderTestUtil.commonLoadCredentials(EXECUTION_ENV);
+        assertNotNull(CredentialLoaderTestUtil.CRED_USERNAME, "Please check if test-config.yaml is setup correctly");
+        assertNotNull(CredentialLoaderTestUtil.CRED_PASSWORD, "Please check if test-config.yaml is setup correctly");
+    }
 
     @Test
-    public void verify(){
-        String s = "eyJraWQiOiI2NzYwMjFiYjdkY2ViM2NmZmE1NGQ0NDZlMjdiNjQwNDRjMTE2N2Y2ZDZlMWVlOGViNjQzYmUzODA4NTZlNmZiIiwiYWxnIjoiUlMyNTYifQ.eyJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZW5nb3BhbHRlc3RfODkxOCIsImlzcyI6Im9hdXRoLmViYXkuY29tIiwic3ViIjoiVVRIOEpzNXFSUjIiLCJhdWQiOiJTb25hbVJ1ZC1zdGFnaW5ndC1TQlgtOWYxMjNmZmE0LTgxNDZkNzIxIiwiaWF0IjoxNTIzMzkwNzUzLCJleHAiOjE1MjMzOTQzNTMsIm5vbmNlIjoiMTIzNCJ9.jR6nG6qRP4ps0Z4fQb-RLIcdugvkw8NokO24DN_JH-Fd_ONOBOv2Weh8Z9egv55aH9M_gXzpk8xPtxYNH3mH25cppP2pY-kBdbvmtexH9LdKygqdDLvHFqdGp-Amg7CG0bSKCQ-zDPHj1b4SWWEWTWauEepGhV4fft6ORo6-EzDo77D8CsmncU2fAZrILav7iDX6G4PhpH7JPPlw9y_3yGi6uiRotx6H6IT-tjYdDrCx7Q9CHgzRMCzOlzVbOoytvOsnVXv4Qokr3eU0CUoxgxnNuWtod3VvHgF27jfN5CO7s7eys43viRNwWxOj1Pn9CuvVOBAe3H8DFLpu4IRKLw";
-        System.out.println(EbayIdTokenValidator.validate(s,Arrays.asList(new String[]{"SonamRud-stagingt-SBX-9f123ffa4-8146d721"})));
-        System.out.println(EbayIdTokenValidator.validate(s,Arrays.asList(new String[]{"SonamRud-stagingt-SBX-9f123ffa4-8146d721"})));
+    public void generateIdTokenAndVerify() throws InterruptedException {
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
+        if (!CredentialLoaderTestUtil.isUserCredentialsLoaded) {
+            System.err.println("\"Please check if test-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
+        String nonce = UUID.randomUUID().toString();
+        String url = getIdTokenResponseUrl(nonce);
+        int idTokenIndex = url.indexOf("id_token=");
+        String idToken = null;
+        if (idTokenIndex > 0) {
+            Pattern pattern = Pattern.compile("id_token=(.*?)$");
+            Matcher matcher = pattern.matcher(url);
+            if (matcher.find()) {
+                idToken = matcher.group(1);
+            }
+        }
+
+        assertNotNull(idToken);
+        String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+        EbayIdToken ebayIdToken = EbayIdTokenValidator.validate(idToken, Arrays.asList(appId));
+        assertNotNull(ebayIdToken);
+        assertEquals(CRED_USERNAME, ebayIdToken.getPreferedUserName());
+        assertEquals("oauth.ebay.com", ebayIdToken.getIssuer());
+        assertEquals(nonce, ebayIdToken.getNonce());
+        assertEquals(appId, ebayIdToken.getAudience());
+		assertTrue(ebayIdToken.getIssuedAt() < (new Date().getTime() / 1000));
+        assertTrue(ebayIdToken.getExpiresAt() > (new Date().getTime() / 1000));
     }
-//
-//	@BeforeClass
-//	public static void init() throws MalformedURLException {
-//		String userDir = "user.dir";
-//		String pathToMETAINF = "src/test/resources/META-INF";
-//
-//		String currentDirectory = System.getProperty(userDir);
-//		File curDir = new File(currentDirectory);
-//		File resourceDir = new File(curDir, pathToMETAINF);
-//		File configDir = new File(resourceDir, "config");
-//		RuntimeContext.setConfigRoot(resourceDir.toURI().toURL());
-//		RuntimeContext.setResourceRoot(configDir.toURI().toURL());
-//		RuntimeContext.setExternalConfigRoot(configDir.toURI().toURL());
-//
-//		IRaptorContext raptorContext = new MockRaptorContext();
-//		RaptorContextFactory.setCtx(raptorContext);
-//		RaptorESamsHelper.getInstance();
-//		NameServiceImpl.initialize();
-//	}
-//
-//	@Test
-//	public void parse() throws Exception {
-//
-//		IDTokenInfo inputClaims =  buildClaims();
-//
-//		Map<String, Object> claims = convertToMap(inputClaims);
-//
-//		DefaultJwtParser extractor = new DefaultJwtParser();
-//
-//		// generate IDToken
-//		String idToken = extractor.generateIDToken(claims);
-//
-//		// validate idtoken
-//		IDTokenInfo jwtTokenInfo = extractor.parse(idToken);
-//
-//		// ID Token
-//		Assert.assertEquals(inputClaims.getSubject(), jwtTokenInfo.getSubject());
-//		Assert.assertEquals(inputClaims.getIssuer(), jwtTokenInfo.getIssuer());
-//		Assert.assertEquals(inputClaims.getNonce(), jwtTokenInfo.getNonce());
-//		Assert.assertEquals(inputClaims.getAudience(), jwtTokenInfo.getAudience());
-//		Assert.assertEquals(inputClaims.getIssedAtInMilSecs(), jwtTokenInfo.getIssedAtInMilSecs());
-//		Assert.assertEquals(inputClaims.getPreferedUserName(), jwtTokenInfo.getPreferedUserName());
-//		Assert.assertEquals(inputClaims.getExpiryInMilSecs(), jwtTokenInfo.getExpiryInMilSecs());
-//
-//	}
+
+    public String getIdTokenResponseUrl(String nonce) throws InterruptedException {
+        // Optional, if not specified, WebDriver will search your path for chromedriver.
+        System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
+
+        WebDriver driver = new ChromeDriver();
+        IEbayAuthApi authApi = new EbayAuthApi();
+        String idTokenUrl = authApi.generateIdTokenUrl(EXECUTION_ENV, Optional.of("current-page"), nonce);
+
+        driver.get(idTokenUrl);
+        Thread.sleep(5000);
+
+        WebElement userId = (new WebDriverWait(driver, 10))
+                .until(ExpectedConditions.visibilityOf(driver.findElement(By.cssSelector("input[type='text']:not([name='userid_otp']):not([name='otp'])"))));
+
+        WebElement password = driver.findElement(By.cssSelector("input[type='password']"));
+        userId.sendKeys(CRED_USERNAME);
+        password.sendKeys(CRED_PASSWORD);
+        driver.findElement(By.name("sgnBt")).submit();
+
+        Thread.sleep(5000);
+
+        String url = null;
+        if (driver.getCurrentUrl().contains("id_token=")) {
+            System.out.println("Id Token Obtained");
+            url = driver.getCurrentUrl();
+        } else {
+            WebElement agreeBtn = (new WebDriverWait(driver, 10))
+                    .until(ExpectedConditions.visibilityOf(driver.findElement(By.id("submit"))));
+
+            agreeBtn.submit();
+            Thread.sleep(5000);
+            url = driver.getCurrentUrl();
+        }
+        driver.quit();
+        System.out.println(url);
+        return url;
+    }
+
 //
 //	@Test
 //	public void parseIDTokenEmptry() throws Exception {

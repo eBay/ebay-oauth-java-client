@@ -18,6 +18,7 @@
 
 package com.ebay.api.client.auth.oauth2;
 
+import com.ebay.api.security.openid.jwt.EbayIdTokenValidator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -30,18 +31,16 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import com.ebay.api.client.auth.oauth2.model.Environment;
 import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static com.ebay.api.security.CredentialLoaderTestUtil.CRED_PASSWORD;
+import static com.ebay.api.security.CredentialLoaderTestUtil.CRED_USERNAME;
+import static org.junit.Assert.*;
 
 public class AuthorizationCodeTest {
     private static String CREDENTIAL_USERNAME = null;
@@ -54,36 +53,19 @@ public class AuthorizationCodeTest {
     private static final Environment EXECUTION_ENV = Environment.SANDBOX;
 
     @BeforeClass
-    public static void testSetup() throws FileNotFoundException {
-        //TODO: Create the file ebay-config.yaml using the ebay-config-sample.yaml before running these tests
-        CredentialLoaderTestUtil.loadAppCredentials();
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
-            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
-            return;
-        }
-
-        // Loading the test user credentials for Sandbox
-        Map<String, Map<String, String>> values = CredentialLoaderTestUtil.loadUserCredentials();
-        if(!CredentialLoaderTestUtil.isUserCredentialsLoaded){
-            System.err.println("\"Please check if test-config.yaml is setup correctly for app credentials");
-            return;
-        }
-
-        String userCredentialKey = EXECUTION_ENV.equals(Environment.PRODUCTION) ? "production-user" : "sandbox-user";
-        Object valuesObj = values.get(userCredentialKey);
-        if (null != valuesObj && valuesObj instanceof Map) {
+    public static void testSetup() {
+        CredentialLoaderTestUtil.commonLoadCredentials(EXECUTION_ENV);
             @SuppressWarnings("unchecked")
 			Map<String, String> credentialValues = (Map<String, String>) valuesObj;
             CREDENTIAL_USERNAME = credentialValues.get("username");
             CREDENTIAL_PASSWORD = credentialValues.get("password");
-        }
         assertNotNull(CREDENTIAL_USERNAME, "Please check if test-config.yaml is setup correctly");
         assertNotNull(CREDENTIAL_PASSWORD, "Please check if test-config.yaml is setup correctly");
     }
 
     @Test
     public void testConfigLoadYamlFile() {
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
             System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
             return;
         }
@@ -98,11 +80,11 @@ public class AuthorizationCodeTest {
 
     @Test
     public void testExchangeAuthorizationCode() throws InterruptedException, IOException {
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
             System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
             return;
         }
-        if(!CredentialLoaderTestUtil.isUserCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isUserCredentialsLoaded) {
             System.err.println("\"Please check if test-config.yaml is setup correctly for user credentials");
             return;
         }

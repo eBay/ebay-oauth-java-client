@@ -43,7 +43,7 @@ public class EbayIdTokenValidator {
 
     public static EbayIdToken validate(String idToken, List<String> trustedClientIds) {
         if (isEmpty(idToken)) {
-            throw new JWTExtractException("ID token is null or empty");
+                throw new JWTExtractException("ID token is null or empty");
         }
 
         String[] tokens = idToken.split("\\.");
@@ -72,7 +72,7 @@ public class EbayIdTokenValidator {
         if (hasExpired) {
             throw new JWTExtractException("IDToken has expired at: " + expiresAt);
         }
-        //TODO: Verify aud with trustedClientIds and iss
+
         if (!trustedClientIds.contains(tokenInfo.getAudience())) {
             throw new JWTExtractException("IDToken generated for Client: " + tokenInfo.getAudience());
         }

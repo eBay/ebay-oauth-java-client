@@ -37,7 +37,7 @@ public class EbayIdToken {
     @JsonProperty("iat")
     private long issuedAt;
     @JsonProperty("exp")
-    private int expiresAt;
+    private long expiresAt;
     @JsonProperty("preferred_username")
     private String preferedUserName;
 
@@ -81,11 +81,11 @@ public class EbayIdToken {
         this.issuedAt = issuedAt;
     }
 
-    public int getExpiresAt() {
+    public long getExpiresAt() {
         return expiresAt;
     }
 
-    public void setExpiresAt(int expiresAt) {
+    public void setExpiresAt(long expiresAt) {
         this.expiresAt = expiresAt;
     }
 

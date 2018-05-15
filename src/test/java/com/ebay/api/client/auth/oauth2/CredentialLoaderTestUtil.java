@@ -18,6 +18,7 @@
 
 package com.ebay.api.client.auth.oauth2;
 
+import com.ebay.api.security.types.Environment;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -28,6 +29,9 @@ import java.util.Map;
 public class CredentialLoaderTestUtil {
     public static boolean isAppCredentialsLoaded = false;
     public static boolean isUserCredentialsLoaded = false;
+
+    public static String CRED_USERNAME = null;
+    public static String CRED_PASSWORD = null;
 
     public static void loadAppCredentials() {
         String runtimeParam = System.getProperty("credential.yaml");
@@ -67,5 +71,29 @@ public class CredentialLoaderTestUtil {
             }
         }
         return values;
+    }
+
+    public static void commonLoadCredentials(Environment environment){
+        //TODO: Create the file ebay-config.yaml using the ebay-config-sample.yaml before running these tests
+        CredentialLoaderTestUtil.loadAppCredentials();
+        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
+        // Loading the test user credentials for Sandbox
+        Map<String, Map<String, String>> values = CredentialLoaderTestUtil.loadUserCredentials();
+        if(!CredentialLoaderTestUtil.isUserCredentialsLoaded){
+            System.err.println("\"Please check if test-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
+        String userCredentialKey = environment.equals(Environment.PRODUCTION) ? "production-user" : "sandbox-user";
+        Object valuesObj = values.get(userCredentialKey);
+        if (null != valuesObj && valuesObj instanceof Map) {
+            Map<String, String> credValues = (Map<String, String>) valuesObj;
+            CRED_USERNAME = credValues.get("username");
+            CRED_PASSWORD = credValues.get("password");
+        }
     }
 }
