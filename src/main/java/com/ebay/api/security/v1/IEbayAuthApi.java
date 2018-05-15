@@ -33,4 +33,6 @@ public interface IEbayAuthApi {
     OAuthResponse exchangeCode(Environment environment, String code) throws IOException;
 
     OAuthResponse getAccessToken(Environment environment, String refreshToken, List<String> scopes) throws IOException;
+
+    String generateIdTokenUrl(Environment environment, Optional<String> state, String nonce);
 }

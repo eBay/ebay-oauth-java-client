@@ -19,6 +19,7 @@
 package com.ebay.api.security;
 
 import com.ebay.api.security.impl.EbayAuthApi;
+import com.ebay.api.security.openid.jwt.EbayIdTokenValidator;
 import com.ebay.api.security.types.Environment;
 import com.ebay.api.security.types.OAuthResponse;
 import com.ebay.api.security.v1.IEbayAuthApi;
@@ -30,60 +31,34 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static com.ebay.api.security.CredentialLoaderTestUtil.CRED_PASSWORD;
+import static com.ebay.api.security.CredentialLoaderTestUtil.CRED_USERNAME;
+import static org.junit.Assert.*;
 
 public class AuthorizationCodeTest {
-    private static String CRED_USERNAME = null;
-    private static String CRED_PASSWORD = null;
     private static final List<String> SCOPES_LIST = Arrays.asList(new String[]{"https://api.ebay.com/oauth/api_scope", "https://api.ebay.com/oauth/api_scope/sell.marketing.readonly"});
 
     //NOTE: Change this env to Environment.PRODUCTION to run this test in PRODUCTION
     private static final Environment EXECUTION_ENV = Environment.SANDBOX;
 
     @BeforeClass
-    public static void testSetup() throws FileNotFoundException {
-        //TODO: Create the file ebay-config.yaml using the ebay-config-sample.yaml before running these tests
-        CredentialLoaderTestUtil.loadAppCredentials();
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
-            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
-            return;
-        }
-
-        // Loading the test user credentials for Sandbox
-        Map<String, Map<String, String>> values = CredentialLoaderTestUtil.loadUserCredentials();
-        if(!CredentialLoaderTestUtil.isUserCredentialsLoaded){
-            System.err.println("\"Please check if test-config.yaml is setup correctly for app credentials");
-            return;
-        }
-
-        String userCredentialKey = EXECUTION_ENV.equals(Environment.PRODUCTION) ? "production-user" : "sandbox-user";
-        Object valuesObj = values.get(userCredentialKey);
-        if (null != valuesObj && valuesObj instanceof Map) {
-            Map<String, String> credValues = (Map<String, String>) valuesObj;
-            CRED_USERNAME = credValues.get("username");
-            CRED_PASSWORD = credValues.get("password");
-        }
+    public static void testSetup() {
+        CredentialLoaderTestUtil.commonLoadCredentials(EXECUTION_ENV);
         assertNotNull(CRED_USERNAME, "Please check if test-config.yaml is setup correctly");
         assertNotNull(CRED_PASSWORD, "Please check if test-config.yaml is setup correctly");
     }
 
     @Test
     public void testEbayConfigLoadYamlFile() {
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
             System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
             return;
         }
@@ -98,11 +73,11 @@ public class AuthorizationCodeTest {
 
     @Test
     public void exchangeAuthzCode() throws InterruptedException, IOException {
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
             System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
             return;
         }
-        if(!CredentialLoaderTestUtil.isUserCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isUserCredentialsLoaded) {
             System.err.println("\"Please check if test-config.yaml is setup correctly for app credentials");
             return;
         }
@@ -178,5 +153,12 @@ public class AuthorizationCodeTest {
         }
         driver.quit();
         return url;
+    }
+
+    @Test
+    public void verify() {
+        String s = "eyJraWQiOiI2NzYwMjFiYjdkY2ViM2NmZmE1NGQ0NDZlMjdiNjQwNDRjMTE2N2Y2ZDZlMWVlOGViNjQzYmUzODA4NTZlNmZiIiwiYWxnIjoiUlMyNTYifQ.eyJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZW5nb3BhbHRlc3RfODkxOCIsImlzcyI6Im9hdXRoLmViYXkuY29tIiwic3ViIjoiVVRIOEpzNXFSUjIiLCJhdWQiOiJTb25hbVJ1ZC1zdGFnaW5ndC1TQlgtOWYxMjNmZmE0LTgxNDZkNzIxIiwiaWF0IjoxNTIzMzkwNzUzLCJleHAiOjE1MjMzOTQzNTMsIm5vbmNlIjoiMTIzNCJ9.jR6nG6qRP4ps0Z4fQb-RLIcdugvkw8NokO24DN_JH-Fd_ONOBOv2Weh8Z9egv55aH9M_gXzpk8xPtxYNH3mH25cppP2pY-kBdbvmtexH9LdKygqdDLvHFqdGp-Amg7CG0bSKCQ-zDPHj1b4SWWEWTWauEepGhV4fft6ORo6-EzDo77D8CsmncU2fAZrILav7iDX6G4PhpH7JPPlw9y_3yGi6uiRotx6H6IT-tjYdDrCx7Q9CHgzRMCzOlzVbOoytvOsnVXv4Qokr3eU0CUoxgxnNuWtod3VvHgF27jfN5CO7s7eys43viRNwWxOj1Pn9CuvVOBAe3H8DFLpu4IRKLw";
+        System.out.println(EbayIdTokenValidator.validate(s, Arrays.asList(new String[]{"SonamRud-stagingt-SBX-9f123ffa4-8146d721"})));
+        System.out.println(EbayIdTokenValidator.validate(s, Arrays.asList(new String[]{"SonamRud-stagingt-SBX-9f123ffa4-8146d721"})));
     }
 }

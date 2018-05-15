@@ -113,7 +113,7 @@ public class EbayAuthApi implements IEbayAuthApi {
         if (state.isPresent()) {
             sb.append("state=").append(state.get());
         }
-        //TODO Logger log the string created
+        logger.debug("authorize_url=" + sb.toString());
         return sb.toString();
     }
 
@@ -166,5 +166,22 @@ public class EbayAuthApi implements IEbayAuthApi {
         } else {
             return EbayAuthUtilities.handleError(response);
         }
+    }
+
+    @Override
+    public String generateIdTokenUrl(Environment environment, Optional<String> state, String nonce) {
+        StringBuilder sb = new StringBuilder();
+        Credentials credentials = CredentialHelper.getCredentials(environment);
+
+        sb.append(environment.getWebEndpoint()).append("?");
+        sb.append("client_id=").append(credentials.get(APP_ID)).append("&");
+        sb.append("response_type=id_token").append("&");
+        sb.append("redirect_uri=").append(credentials.get(REDIRECT_URI)).append("&");
+        sb.append("nonce=").append(nonce).append("&");
+        if (state.isPresent()) {
+            sb.append("state=").append(state.get());
+        }
+        logger.debug("id_token_url=" + sb.toString());
+        return sb.toString();
     }
 }
