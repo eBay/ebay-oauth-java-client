@@ -111,7 +111,7 @@ public class AuthorizationCodeTest {
         assertNotNull(authorizationCode);
 
         OAuth2Api auth2Api = new OAuth2Api();
-        OAuthResponse oauth2Response = auth2Api.exchangeCode(EXECUTION_ENV, authorizationCode);
+        OAuthResponse oauth2Response = auth2Api.exchangeCodeForAccessToken(EXECUTION_ENV, authorizationCode);
         assertNotNull(oauth2Response);
 
         assertNotNull(oauth2Response.getRefreshToken().get());
@@ -135,7 +135,7 @@ public class AuthorizationCodeTest {
         String authorizationCode = getAuthorizationCode();
         if(authorizationCode != null){
         	OAuth2Api oauth2Api = new OAuth2Api();
-        	OAuthResponse oauth2Response = oauth2Api.exchangeCode(EXECUTION_ENV, authorizationCode);
+        	OAuthResponse oauth2Response = oauth2Api.exchangeCodeForAccessToken(EXECUTION_ENV, authorizationCode);
         	refreshToken = oauth2Response.getRefreshToken().get().getToken();
         }
         assertNotNull(refreshToken);
@@ -156,7 +156,7 @@ public class AuthorizationCodeTest {
 
         WebDriver driver = new ChromeDriver();
         OAuth2Api auth2Api = new OAuth2Api();
-        String authorizeUrl = auth2Api.generateUserAuthorizeUrl(EXECUTION_ENV, SCOPE_LIST, Optional.of("current-page"));
+        String authorizeUrl = auth2Api.generateUserAuthorizationUrl(EXECUTION_ENV, SCOPE_LIST, Optional.of("current-page"));
 
         driver.get(authorizeUrl);
         Thread.sleep(5000);
@@ -209,7 +209,7 @@ public class AuthorizationCodeTest {
         }
 
         OAuth2Api oauth2Api = new OAuth2Api();
-        String authorizationUrl = oauth2Api.generateUserAuthorizeUrl(Environment.SANDBOX, authorizationScopesList, Optional.of("current-page"));
+        String authorizationUrl = oauth2Api.generateUserAuthorizationUrl(Environment.SANDBOX, authorizationScopesList, Optional.of("current-page"));
         System.out.println(authorizationUrl);
         assertNotNull(authorizationUrl);
     }
@@ -222,7 +222,7 @@ public class AuthorizationCodeTest {
         }
 
         OAuth2Api oauth2Api = new OAuth2Api();
-        String authorizationUrl = oauth2Api.generateUserAuthorizeUrl(Environment.PRODUCTION, authorizationScopesList, Optional.of("current-page"));
+        String authorizationUrl = oauth2Api.generateUserAuthorizationUrl(Environment.PRODUCTION, authorizationScopesList, Optional.of("current-page"));
         System.out.println(authorizationUrl);
         assertNotNull(authorizationUrl);
     }

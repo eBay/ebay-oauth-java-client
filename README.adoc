@@ -53,7 +53,7 @@ All of the regular OAuth 2.0 specifications such as `client_credentials`, `autho
 This grant type can be performed by simply using `OAuth2Api.getApplicationToken()`. Read more about this grant type at https://developer.ebay.com/api-docs/static/oauth-client-credentials-grant.html[oauth-client-credentials-grant]
 
 === Grant Type: Authorization Code
-This grant type can be performed by a two step process. Call `OAuth2Api.generateUserAuthorizationUrl()` to get the Authorization URL to redirect the user to. Once the user authenticates and approves the consent, the callback need to be captured by the redirect URL setup by the app and then call `IEbayAuthApi.exchangeCode()` to get the refresh and access tokens.
+This grant type can be performed by a two step process. Call `OAuth2Api.generateUserAuthorizationUrl()` to get the Authorization URL to redirect the user to. Once the user authenticates and approves the consent, the callback need to be captured by the redirect URL setup by the app and then call `OAuth2Api.exchangeCodeForAccessToken()` to get the refresh and access tokens.
 
 Read more about this grant type at https://developer.ebay.com/api-docs/static/oauth-authorization-code-grant.html[oauth-authorization-code-grant] and https://developer.ebay.com/api-docs/static/oauth-qref-auth-code-grant.html[Quick Reference]
 

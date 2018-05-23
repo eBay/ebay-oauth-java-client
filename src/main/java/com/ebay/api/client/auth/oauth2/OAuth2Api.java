@@ -98,7 +98,7 @@ public class OAuth2Api {
         return "Basic " + new String(encodeBytes);
     }
 
-    public String generateUserAuthorizeUrl(Environment environment, List<String> scopes, Optional<String> state) {
+    public String generateUserAuthorizationUrl(Environment environment, List<String> scopes, Optional<String> state) {
         StringBuilder sb = new StringBuilder();
         Credentials credentials = CredentialUtil.getCredentials(environment);
         String scope = buildScopeForRequest(scopes).orElse("");
@@ -115,7 +115,7 @@ public class OAuth2Api {
         return sb.toString();
     }
 
-    public OAuthResponse exchangeCode(Environment environment, String code) throws IOException {
+    public OAuthResponse exchangeCodeForAccessToken(Environment environment, String code) throws IOException {
         OkHttpClient client = new OkHttpClient();
         Credentials credentials = CredentialUtil.getCredentials(environment);
 
