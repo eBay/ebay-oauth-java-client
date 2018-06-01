@@ -43,7 +43,7 @@ public class EbayIdTokenValidator {
 
     public static EbayIdToken validate(String idToken, List<String> trustedClientIds) {
         if (isEmpty(idToken)) {
-                throw new JWTExtractException("ID token is null or empty");
+            throw new JWTExtractException("ID token is null or empty");
         }
 
         String[] tokens = idToken.split("\\.");
@@ -97,13 +97,15 @@ public class EbayIdTokenValidator {
             byte[] signatureBytes = new Base64(true).decode(signature);
             // Extract cert from esams
             Certificate cert = IdTokenCertificateHolder.getCertificate(keyId);
-            // Build signatureObj object
-            Signature signatureObj = Signature.getInstance("SHA256withRSA");
-            signatureObj.initVerify(cert);
-            // Supply the Signature Object With the Data to be Verified
-            signatureObj.update(data.getBytes());
-            // Verify signatureObj
-            isValid = signatureObj.verify(signatureBytes);
+            if (cert != null) {
+                // Build signatureObj object
+                Signature signatureObj = Signature.getInstance("SHA256withRSA");
+                signatureObj.initVerify(cert);
+                // Supply the Signature Object With the Data to be Verified
+                signatureObj.update(data.getBytes());
+                // Verify signatureObj
+                isValid = signatureObj.verify(signatureBytes);
+            }
         } catch (JWTExtractException e) {
             throw e;
         } catch (SignatureException e) {

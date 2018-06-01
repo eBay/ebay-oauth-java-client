@@ -154,11 +154,4 @@ public class AuthorizationCodeTest {
         driver.quit();
         return url;
     }
-
-    @Test
-    public void verify() {
-        String s = "eyJraWQiOiI2NzYwMjFiYjdkY2ViM2NmZmE1NGQ0NDZlMjdiNjQwNDRjMTE2N2Y2ZDZlMWVlOGViNjQzYmUzODA4NTZlNmZiIiwiYWxnIjoiUlMyNTYifQ.eyJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZW5nb3BhbHRlc3RfODkxOCIsImlzcyI6Im9hdXRoLmViYXkuY29tIiwic3ViIjoiVVRIOEpzNXFSUjIiLCJhdWQiOiJTb25hbVJ1ZC1zdGFnaW5ndC1TQlgtOWYxMjNmZmE0LTgxNDZkNzIxIiwiaWF0IjoxNTIzMzkwNzUzLCJleHAiOjE1MjMzOTQzNTMsIm5vbmNlIjoiMTIzNCJ9.jR6nG6qRP4ps0Z4fQb-RLIcdugvkw8NokO24DN_JH-Fd_ONOBOv2Weh8Z9egv55aH9M_gXzpk8xPtxYNH3mH25cppP2pY-kBdbvmtexH9LdKygqdDLvHFqdGp-Amg7CG0bSKCQ-zDPHj1b4SWWEWTWauEepGhV4fft6ORo6-EzDo77D8CsmncU2fAZrILav7iDX6G4PhpH7JPPlw9y_3yGi6uiRotx6H6IT-tjYdDrCx7Q9CHgzRMCzOlzVbOoytvOsnVXv4Qokr3eU0CUoxgxnNuWtod3VvHgF27jfN5CO7s7eys43viRNwWxOj1Pn9CuvVOBAe3H8DFLpu4IRKLw";
-        System.out.println(EbayIdTokenValidator.validate(s, Arrays.asList(new String[]{"SonamRud-stagingt-SBX-9f123ffa4-8146d721"})));
-        System.out.println(EbayIdTokenValidator.validate(s, Arrays.asList(new String[]{"SonamRud-stagingt-SBX-9f123ffa4-8146d721"})));
-    }
 }
