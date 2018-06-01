@@ -19,10 +19,8 @@
 package com.ebay.api.security;
 
 import com.ebay.api.security.impl.EbayAuthApi;
-import com.ebay.api.security.openid.jwt.EbayIdTokenValidator;
 import com.ebay.api.security.types.EbayIdToken;
 import com.ebay.api.security.types.Environment;
-import com.ebay.api.security.types.OAuthResponse;
 import com.ebay.api.security.v1.IEbayAuthApi;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,13 +31,17 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.ebay.api.security.CredentialLoaderTestUtil.CRED_PASSWORD;
 import static com.ebay.api.security.CredentialLoaderTestUtil.CRED_USERNAME;
+import static com.ebay.api.security.openid.jwt.EbayIdTokenValidator.JWTExtractException;
+import static com.ebay.api.security.openid.jwt.EbayIdTokenValidator.validate;
 import static org.junit.Assert.*;
 
 public class EbayIdTokenValidatorTest {
@@ -78,13 +80,13 @@ public class EbayIdTokenValidatorTest {
 
         assertNotNull(idToken);
         String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
-        EbayIdToken ebayIdToken = EbayIdTokenValidator.validate(idToken, Arrays.asList(appId));
+        EbayIdToken ebayIdToken = validate(idToken, Collections.singletonList(appId));
         assertNotNull(ebayIdToken);
         assertEquals(CRED_USERNAME, ebayIdToken.getPreferedUserName());
         assertEquals("oauth.ebay.com", ebayIdToken.getIssuer());
         assertEquals(nonce, ebayIdToken.getNonce());
         assertEquals(appId, ebayIdToken.getAudience());
-		assertTrue(ebayIdToken.getIssuedAt() < (new Date().getTime() / 1000));
+        assertTrue(ebayIdToken.getIssuedAt() < (new Date().getTime() / 1000));
         assertTrue(ebayIdToken.getExpiresAt() > (new Date().getTime() / 1000));
     }
 
@@ -126,266 +128,119 @@ public class EbayIdTokenValidatorTest {
         return url;
     }
 
-//
-//	@Test
-//	public void parseIDTokenEmptry() throws Exception {
-//
-//		DefaultJwtParser extractor = new DefaultJwtParser();
-//
-//		// validate idtoken
-//		try {
-//			extractor.parse("");
-//		}  catch (JWTExtractException e) {
-//			return;
-//		}
-//
-//		Assert.fail("expected exception but did not get one");
-//
-//	}
-//
-//	@Test
-//	public void parseIDTokenMissingHeader() throws Exception {
-//
-//		DefaultJwtParser extractor = new DefaultJwtParser();
-//
-//		// validate idtoken
-//		try {
-//			extractor.parse("dummyPayload.dummySign");
-//		}  catch (JWTExtractException e) {
-//			return;
-//		}
-//
-//		Assert.fail("expected exception but did not get one");
-//	}
-//
-//	@Test
-//	public void parseIdTokenMissingSign() {
-//
-//		DefaultJwtParser extractor = new DefaultJwtParser();
-//
-//		// validate idtoken
-//		try {
-//			extractor.parse("dummyHeader.dummy.");
-//		}  catch (JWTExtractException e) {
-//			return;
-//		}
-//
-//		Assert.fail("expected exception but did not get one");
-//
-//	}
-//
-//	@Test
-//	public void parseIdTokenMissingPayload() {
-//
-//		DefaultJwtParser extractor = new DefaultJwtParser();
-//
-//		// validate idtoken
-//		try {
-//			extractor.parse("dummyHeader..");
-//		}  catch (JWTExtractException e) {
-//			return;
-//		}
-//
-//		Assert.fail("expected exception but did not get one");
-//
-//	}
-//
-//	@Test
-//	public void parseIDTokenExpired() throws Exception {
-//
-//		IDTokenInfo inputClaims =  buildClaims();
-//
-//		DateTime currentTime = DateTime.now(DateTimeZone.UTC);
-//		DateTime expiryTime = currentTime.minusHours(1);
-//		long expiryInMs = expiryTime.getMillis();
-//		inputClaims.setExpiryInSecs(expiryInMs/1000);
-//
-//		Map<String, Object> claims = convertToMap(inputClaims);
-//
-//		DefaultJwtParser extractor = new DefaultJwtParser();
-//
-//		// generate IDToken
-//		String idToken = extractor.generateIDToken(claims);
-//
-//		// validate idtoken
-//		try {
-//			extractor.parse(idToken);
-//		} catch (JWTExtractException e) {
-//			return;
-//		}
-//
-//		Assert.fail("expected exception but did not get one");
-//
-//	}
-//
-////	@Test
-////	public void parseIDTokenExpiredCreatedInOAuthWebApp() throws Exception {
-////
-////		String idToken = "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJvYXV0aC5lYmF5LmNvbSIsInN1YiI6ImR1bW15IiwiaWF0IjoxNTA3NTk0NTAxLCJleHAiOjE1MDc1OTgxMDF9.GdUVsQRRudLzaLAE5HUclpwGzt51O8fLYZkozhODAkJEPqCF6R79221zTwlEDIQG4o2Oj2AZD2HF8csVDrJA5uBrOuj-ZvvMCrRvIdwubMeEa63RTDimdgozdtysiEMgkpl5qTelHEdTESciOnXEWHaPpW_9PQxrExJ-BTMAYYB_WZBFaUIZEOFChAYKrpzdmnj9h9EFiF33WlyYuyawDuhIUvV2wSJmCyllGJHeiHrV_5GKdmi59LJqvYB-1NQ9ovNZtmtLALTc8GGIxDzR5rEiAbqCd-IQa71Dt58u0L1neX0U8Stg2Dt-fSpJK2MXHH0eU9TqWiWPfmJ_4rMdkg";
-////		DefaultJwtParser extractor = new DefaultJwtParser();
-////
-////		// validate idtoken
-////		try {
-////			extractor.parse(idToken);
-////		} catch (JWTExtractException e) {
-////			e.printStackTrace();
-////			Assert.fail("NO exception expected but got one");
-////			return;
-////		}
-////
-////
-////	}
-//
-//	@Test
-//	public void parseInvalidSign() throws JWTExtractException {
-//
-//		String inputToken = "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1MDcxNDIxMjk1NzAsInN1YiI6IlFJQlVTIEJ1eWVyIiwibm9uY2UiOiJzb21ldmFsdWUiLCJlbWFpbCI6ImlhZm1vYmlsZTAwMUB1bmljb3JuLnFhLmViYXkuY29tIiwiYXVkIjoiQWRtaW5BcHAiLCJpc3MiOiJodHRwczovL29wZW5pZC5jMmlkLmNvbSIsImp0aSI6IjIwMTctMTAtMDRUMTA6MzU6MjkuNTg4LTA3OjAwNzY0MTE2Njk2OTUyMTIiLCJhY3IiOiJjMmlkLmxvYS5oaXNlYyJ9.l6nrNLLLqmUGEFs2v0rCR770Gg5gToclYOweGvud2iajus3zQrI8jV7sI5uKf0h977Eo4ZLsxUDesooyaQHPXlpr7QP-8pKk_F3LNOgpGe92TbDaBbplyXHqG2dti6AbkrUejHY8VdlkQbKTFQOVgvmA115n1e88yEm0DkDYqzaZJ8YJyvwkQhNbSEpiTt6Pn4wh-zkgypgyOYfNNKduheGXO45jgFLTYpcQjAs2ylMmMSrxvq0TUAS_DFYhqBvNrpu77dxH-2mpt4WmEfUPBooEEWXIA-4OZHwsP_AmHb2RzCn5ZhOvrns7bUke5UjZWf2Fn6pQdE22dawtL4Xm";
-//
-//		DefaultJwtParser extractor = partialMockBuilder(DefaultJwtParser.class).addMockedMethod("verifySign").createMock();
-//
-//		EasyMock.expect(extractor.verifySign(EasyMock.anyObject(byte [].class), EasyMock.anyObject(String.class))).andReturn(false);
-//
-//		// validate idtoken
-//		try {
-//			extractor.parse(inputToken);
-//		} catch (JWTExtractException e) {
-//			return;
-//		}
-//
-//		Assert.fail("expected exception but did not get one");
-//	}
-//
-//	@Test
-//	public void getKeyThrowsEsamsException() throws JWTExtractException, EsamsException {
-//
-//		DefaultJwtParser extractor = partialMockBuilder(DefaultJwtParser.class).addMockedMethod("getNameService").createMock();
-//
-//		NameService nameService = createMock(NameService.class);
-//
-//		EasyMock.expect(nameService.getKeyPair(DefaultJwtParser.KEY_PAIR_NAME, NameService.VERSION_LAST_ENABLED)).andThrow(new EsamsException("dummyException"));
-//
-//		// validate idtoken
-//		try {
-//			extractor.getKey();
-//		} catch (JWTExtractException e) {
-//			return;
-//		}
-//
-//		Assert.fail("expected exception but did not get one");
-//	}
-//
-//	@Test
-//	public void buildSignatureThrowsException() throws Exception {
-//
-//		DefaultJwtParser extractor = partialMockBuilder(DefaultJwtParser.class).addMockedMethod("getSignature").createMock();
-//
-//		Certificate certificate = createMock(Certificate.class);
-//		Signature signature = createMock(Signature.class);
-//
-//		signature.initVerify(certificate);
-//		EasyMock.expectLastCall().andThrow(new InvalidKeyException("dummyException"));
-//
-//		try {
-//			extractor.buildSignature(certificate);
-//		} catch (JWTExtractException e) {
-//			return;
-//		}
-//
-//		Assert.fail("expected exception but did not get one");
-//
-//	}
-//
-//	@Test
-//	public void extactPayloadThrowsException() throws JWTExtractException {
-//
-//
-//		DefaultJwtParser defaultJwtParser = new DefaultJwtParser();
-//		String [] tokens = {"dummyHeader","dummyPayload",""};
-//
-//		try {
-//			defaultJwtParser.extactPayload( tokens);
-//		} catch (JWTExtractException e) {
-//			return;
-//		}
-//
-//		Assert.fail("expected exception but did not get one");
-//
-//
-//
-//	}
-//
-//	@Test
-//	public void verifySignThrowsException() throws JWTExtractException {
-//
-//		DefaultJwtParser defaultJwtParser = partialMockBuilder(DefaultJwtParser.class).addMockedMethod("getCertFromESAMS").createMock();
-//
-//		EasyMock.expect(defaultJwtParser.getCertFromESAMS()).andThrow(new JWTExtractException("dummyException"));
-//
-//
-//		try {
-//			defaultJwtParser.verifySign(null, null);
-//		} catch (JWTExtractException e) {
-//			return;
-//		}
-//
-//		Assert.fail("expected exception but did not get one");
-//
-//
-//
-//	}
-//
-//	@Test
-//	public void verifySignThrowsNPE() throws JWTExtractException {
-//
-//		DefaultJwtParser defaultJwtParser = new DefaultJwtParser();
-//
-//
-//		try {
-//			defaultJwtParser.verifySign(null, null);
-//		} catch (JWTExtractException e) {
-//			return;
-//		}
-//
-//		Assert.fail("expected exception but did not get one");
-//
-//
-//
-//	}
-//
-//	private Map<String, Object> convertToMap(IDTokenInfo inputClaims) {
-//		ObjectMapper mapper = new ObjectMapper();
-//
-//		// Convert POJO to Map
-//		Map<String, Object> claims =
-//		    mapper.convertValue(inputClaims, new TypeReference<Map<String, Object>>() {});
-//		return claims;
-//	}
-//
-//	private IDTokenInfo buildClaims() {
-//
-//		IDTokenInfo inputClaims = new IDTokenInfo();
-//
-//		inputClaims.setAudience("shipping");
-//
-//		DateTime currentTime = DateTime.now(DateTimeZone.UTC);
-//		DateTime expiryTime = currentTime.plusHours(1);
-//		long expiryInMs = expiryTime.getMillis();
-//		inputClaims.setExpiryInSecs(expiryInMs/1000);
-//
-//		inputClaims.setIssuer("ebay");
-//
-//		long randomNum = (long) (Math.random() * 100000000000000L);
-//		inputClaims.setNonce(Long.valueOf(randomNum).toString());
-//
-//		inputClaims.setSubject("dummyUserName");
-//
-//		return inputClaims;
-//	}
-//
-//	@Test
-//	public void getDefaultParser() throws Exception {
-//		JWTParser jwtParser = JWT.getDefaultParser();
-//		org.junit.Assert.assertNotNull(jwtParser);
-//	}
+    @Test
+    public void idTokenFailureWithIncorrectAud() throws InterruptedException {
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
+        if (!CredentialLoaderTestUtil.isUserCredentialsLoaded) {
+            System.err.println("\"Please check if test-config.yaml is setup correctly for app credentials");
+            return;
+        }
 
+        String nonce = UUID.randomUUID().toString();
+        String url = getIdTokenResponseUrl(nonce);
+        int idTokenIndex = url.indexOf("id_token=");
+        String idToken = null;
+        if (idTokenIndex > 0) {
+            Pattern pattern = Pattern.compile("id_token=(.*?)$");
+            Matcher matcher = pattern.matcher(url);
+            if (matcher.find()) {
+                idToken = matcher.group(1);
+            }
+        }
+
+        assertNotNull(idToken);
+        try {
+            EbayIdToken ebayIdToken = validate(idToken, Collections.singletonList("test"));
+            fail("Exception expected");
+        } catch (JWTExtractException e) {
+            assertTrue(e.getMessage().contains("IDToken generated for Client: "));
+        }
+    }
+
+    @Test
+    public void parseIDTokenErrorsEmpty() {
+        try {
+            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            validate("", Collections.singletonList(appId));
+            fail("Exception expected");
+        } catch (JWTExtractException e) {
+            assertEquals("ID token is null or empty", e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseIDTokenErrorsMultipleParts() {
+        try {
+            String multiParts = "test.test.test.test";
+            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            validate(multiParts, Collections.singletonList(appId));
+            fail("Exception expected");
+        } catch (JWTExtractException e) {
+            assertEquals("invalid id token not all parts present", e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseIDTokenErrorsOnePartEmpty() {
+        try {
+            String multiParts = "test..test.test";
+            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            validate(multiParts, Collections.singletonList(appId));
+            fail("Exception expected");
+        } catch (JWTExtractException e) {
+            assertEquals("invalid id token not all parts present", e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseIDTokenSignatureValidationFailure() {
+        String invalidToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjNiY2YwYjNjYzg2MmEwYWM3NzA5MmY3MmI0ZGZkYjIwYTgxMDBkZjAifQ.eyJhdWQiOiI0MDc0MDg3MTgxOTIuYXBwcy5lYmF5LmNvbSIsInN1YiI6ImJTQXE5cEJIV2NFbnJ4IiwiZXhwIjoxNTI3ODMzNTYzLCJpc3MiOiJodHRwczovL29hdXRoLmViYXkuY29tIiwiaWF0IjoxNTI3ODI5OTYzLCJub25jZSI6ImFhYmNlLWRkc2QtZWRmYSIsInByZWZlcnJlZF91c2VybmFtZSI6InRlc3RfdXNlciJ9.XuX3cPtACrwCcpD6O721lMB4I6Me20JTJhIaK1Ov-4Tq4hciK0EAEx-b7FM9_KLYbjMK-bSAq9pBHWcEnrxi2wMoJnXU84WJQMjK_yCYLNnpVxVHqovXMGTjHzMseFZ79md8FH3t3lEeHoPf5YXXOqZwpBhjEcm8Puz2QgAvF1FxLCfeuklfOxTSpBNIHgpd_HNDCWwefIIPz1Pc7kO5w4vmyBpmgB76ygbW_y1luuKbarAaeGgeP-y3t5DBmKE7JsfW9dOts2Aqq_o3s9hG75tjGVFcO7SQihZ2B04lbwyao3DKBJmBXDd7VhIyg6Gn3cT_ZnBUVP0L0g7ox3x06A";
+        try {
+            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            validate(invalidToken, Collections.singletonList(appId));
+            fail("Exception expected");
+        } catch (JWTExtractException e) {
+            assertEquals("signature verification failed", e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseIDTokenMissingHeader() {
+        try {
+            String multiParts = ".test.test";
+            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            validate(multiParts, Collections.singletonList(appId));
+            fail("Exception expected");
+        } catch (JWTExtractException e) {
+            assertEquals("invalid id token not all parts present", e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseIdTokenMissingSign() {
+        try {
+            String multiParts = "test.test.";
+            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            validate(multiParts, Collections.singletonList(appId));
+            fail("Exception expected");
+        } catch (JWTExtractException e) {
+            assertEquals("invalid id token not all parts present", e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseIdTokenMissingPayload() {
+        try {
+            String multiParts = "test..test";
+            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            validate(multiParts, Collections.singletonList(appId));
+            fail("Exception expected");
+        } catch (JWTExtractException e) {
+            assertEquals("invalid id token not all parts present", e.getMessage());
+        }
+
+    }
 }
