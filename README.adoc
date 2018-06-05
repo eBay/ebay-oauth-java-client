@@ -16,7 +16,7 @@ This is created as a Maven based Java project and can be used as a dependency in
 
 == Installation
 Current Version : 1.0.1
-Add following to <dependencies/> section of your pom.xml -
+Add following to <dependencies/> section of your pom.xml as given below
 
 [source,xml]
 ----
