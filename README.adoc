@@ -61,7 +61,7 @@ Read more about this grant type at https://developer.ebay.com/api-docs/static/oa
 This grant type can be performed by simply using `OAuth2Api.getAccessToken()`. Usually access tokens are short lived and if the access token is expired, the caller can use the refresh token to generate a new access token. Read more about it at https://developer.ebay.com/api-docs/static/oauth-qref-auth-code-grant.html[Using a refresh token to update a user access token]
 
 == Contribution
-Contributions in terms of patches, features, or comments are always welcome. Refer to link:CONTRIBUTING.adoc[CONTRIBUTING] for guidelines. Submit github issues for any feature enhancements, bugs, or documentation problems as well as Questions and Comments.
+Contributions in terms of patches, features, or comments are always welcome. Refer to link:CONTRIBUTING.adoc[CONTRIBUTING] for guidelines. Submit Github issues for any feature enhancements, bugs, or documentation problems as well as questions and comments.
 
 == License
 Copyright (c) 2018 eBay Inc.
