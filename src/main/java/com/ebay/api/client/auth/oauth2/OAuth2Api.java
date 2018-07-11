@@ -180,5 +180,6 @@ public class OAuth2Api {
         }
         logger.debug("id_token_url=" + sb.toString());
         return sb.toString();
+        return sb.toString();
     }
 }
