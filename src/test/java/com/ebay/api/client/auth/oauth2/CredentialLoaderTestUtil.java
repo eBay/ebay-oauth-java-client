@@ -16,7 +16,7 @@
  *  *
  */
 
-package com.ebay.api.security;
+package com.ebay.api.client.auth.oauth2;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -34,12 +34,12 @@ public class CredentialLoaderTestUtil {
 
         if (runtimeParam != null && !runtimeParam.trim().isEmpty()) {
             System.out.println("Using Runtime Parameter: " + runtimeParam);
-            CredentialHelper.load(runtimeParam);
+            CredentialUtil.load(runtimeParam);
             isAppCredentialsLoaded = true;
         } else {
             //TODO: Create the file ebay-config.yaml using the ebay-config-sample.yaml before running these tests
             try {
-                CredentialHelper.load(new FileInputStream("src/test/resources/ebay-config.yaml"));
+            	CredentialUtil.load(new FileInputStream("src/test/resources/ebay-config.yaml"));
                 isAppCredentialsLoaded = true;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -47,7 +47,8 @@ public class CredentialLoaderTestUtil {
         }
     }
 
-    public static Map<String, Map<String, String>> loadUserCredentials() {
+    @SuppressWarnings("unchecked")
+	public static Map<String, Map<String, String>> loadUserCredentials() {
         String runtimeParam = System.getProperty("usercred.yaml");
         Map<String, Map<String, String>> values = new HashMap<>();
 

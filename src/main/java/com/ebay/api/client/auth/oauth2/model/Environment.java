@@ -16,7 +16,7 @@
  *  *
  */
 
-package com.ebay.api.security.types;
+package com.ebay.api.client.auth.oauth2.model;
 
 public enum Environment {
     PRODUCTION("api.ebay.com", "https://auth.ebay.com/oauth2/authorize", "https://api.ebay.com/identity/v1/oauth2/token"),

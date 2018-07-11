@@ -16,7 +16,7 @@
  *  *
  */
 
-package com.ebay.api.security.types;
+package com.ebay.api.client.auth.oauth2.model;
 
 import java.util.Optional;
 

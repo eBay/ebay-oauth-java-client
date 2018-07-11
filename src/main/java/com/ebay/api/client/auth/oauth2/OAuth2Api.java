@@ -16,15 +16,13 @@
  *  *
  */
 
-package com.ebay.api.security.impl;
+package com.ebay.api.client.auth.oauth2;
 
-import com.ebay.api.security.CredentialHelper;
-import com.ebay.api.security.CredentialHelper.Credentials;
-import com.ebay.api.security.types.AccessToken;
-import com.ebay.api.security.types.Environment;
-import com.ebay.api.security.types.OAuthResponse;
-import com.ebay.api.security.types.RefreshToken;
-import com.ebay.api.security.v1.IEbayAuthApi;
+import com.ebay.api.client.auth.oauth2.model.AccessToken;
+import com.ebay.api.client.auth.oauth2.model.Environment;
+import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
+import com.ebay.api.client.auth.oauth2.CredentialUtil.Credentials;
+
 import okhttp3.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -35,11 +33,11 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-import static com.ebay.api.security.CredentialHelper.CredentialType.*;
-import static com.ebay.api.security.impl.EbayAuthUtilities.buildScopeForRequest;
+import static com.ebay.api.client.auth.oauth2.CredentialUtil.CredentialType.*;
+import static com.ebay.api.client.auth.oauth2.OAuth2Util.buildScopeForRequest;
 
-public class EbayAuthApi implements IEbayAuthApi {
-    private static final Logger logger = LoggerFactory.getLogger(EbayAuthApi.class);
+public class OAuth2Api {
+    private static final Logger logger = LoggerFactory.getLogger(OAuth2Api.class);
     private static final String CRED_SEPERATOR = ":";
     private static TimedCacheValue appAccessToken = null;
 
@@ -70,7 +68,7 @@ public class EbayAuthApi implements IEbayAuthApi {
 
         OkHttpClient client = new OkHttpClient();
         String scope = buildScopeForRequest(scopes).orElse("");
-        Credentials credentials = CredentialHelper.getCredentials(environment);
+        Credentials credentials = CredentialUtil.getCredentials(environment);
 
         String requestData = String.format("grant_type=client_credentials&scope=%s", scope);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), requestData);
@@ -84,12 +82,12 @@ public class EbayAuthApi implements IEbayAuthApi {
         Response response = client.newCall(request).execute();
         if (response.isSuccessful()) {
             logger.debug("Network call to generate new token is successfull");
-            OAuthResponse oAuthResponse = EbayAuthUtilities.parseForApplicationToken(response.body().string());
+            OAuthResponse oAuthResponse = OAuth2Util.parseApplicationToken(response.body().string());
             AccessToken accessToken = oAuthResponse.getAccessToken().get();
             appAccessToken = new TimedCacheValue(oAuthResponse, new DateTime(accessToken.getExpiresOn()));
             return oAuthResponse;
         } else {
-            return EbayAuthUtilities.handleError(response);
+            return OAuth2Util.handleError(response);
         }
     }
 
@@ -100,9 +98,9 @@ public class EbayAuthApi implements IEbayAuthApi {
         return "Basic " + new String(encodeBytes);
     }
 
-    public String generateUserAuthorizeUrl(Environment environment, List<String> scopes, Optional<String> state) {
+    public String generateUserAuthorizationUrl(Environment environment, List<String> scopes, Optional<String> state) {
         StringBuilder sb = new StringBuilder();
-        Credentials credentials = CredentialHelper.getCredentials(environment);
+        Credentials credentials = CredentialUtil.getCredentials(environment);
         String scope = buildScopeForRequest(scopes).orElse("");
 
         sb.append(environment.getWebEndpoint()).append("?");
@@ -117,9 +115,9 @@ public class EbayAuthApi implements IEbayAuthApi {
         return sb.toString();
     }
 
-    public OAuthResponse exchangeCode(Environment environment, String code) throws IOException {
+    public OAuthResponse exchangeCodeForAccessToken(Environment environment, String code) throws IOException {
         OkHttpClient client = new OkHttpClient();
-        Credentials credentials = CredentialHelper.getCredentials(environment);
+        Credentials credentials = CredentialUtil.getCredentials(environment);
 
         StringBuilder requestData = new StringBuilder();
         requestData.append("grant_type=authorization_code").append("&");
@@ -135,16 +133,15 @@ public class EbayAuthApi implements IEbayAuthApi {
 
         Response response = client.newCall(request).execute();
         if (response.isSuccessful()) {
-            return EbayAuthUtilities.parseForUserToken(response.body().string());
+            return OAuth2Util.parseUserToken(response.body().string());
         } else {
-            return EbayAuthUtilities.handleError(response);
+            return OAuth2Util.handleError(response);
         }
     }
 
-    @Override
     public OAuthResponse getAccessToken(Environment environment, String refreshToken, List<String> scopes) throws IOException {
         OkHttpClient client = new OkHttpClient();
-        Credentials credentials = CredentialHelper.getCredentials(environment);
+        Credentials credentials = CredentialUtil.getCredentials(environment);
 
         String scope = buildScopeForRequest(scopes).orElse("");
 
@@ -162,9 +159,9 @@ public class EbayAuthApi implements IEbayAuthApi {
 
         Response response = client.newCall(request).execute();
         if (response.isSuccessful()) {
-            return EbayAuthUtilities.parseForUserToken(response.body().string());
+            return OAuth2Util.parseUserToken(response.body().string());
         } else {
-            return EbayAuthUtilities.handleError(response);
+            return OAuth2Util.handleError(response);
         }
     }
 }

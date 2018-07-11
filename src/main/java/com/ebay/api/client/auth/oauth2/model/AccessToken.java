@@ -16,14 +16,14 @@
  *  *
  */
 
-package com.ebay.api.security.types;
+package com.ebay.api.client.auth.oauth2.model;
 
 import java.util.Date;
 
-public class RefreshToken {
+public class AccessToken {
     private String token;
     private Date expiresOn;
-    private TokenType tokenType = TokenType.USER;
+    private TokenType tokenType;
 
     public String getToken() {
         return token;
@@ -41,16 +41,19 @@ public class RefreshToken {
         this.expiresOn = expiresOn;
     }
 
+    public void setTokenType(TokenType tokenType) {
+        this.tokenType = tokenType;
+    }
+
     public TokenType getTokenType() {
         return tokenType;
     }
-
+    
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("RefreshToken{");
-        sb.append("token='").append(token).append('\'');
+        final StringBuilder sb = new StringBuilder("AccessToken{");
+        sb.append(", token='").append(token).append('\'');
         sb.append(", expiresOn=").append(expiresOn);
-        sb.append(", tokenType=").append(tokenType);
         sb.append('}');
         return sb.toString();
     }

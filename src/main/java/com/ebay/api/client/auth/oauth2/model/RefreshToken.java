@@ -16,17 +16,14 @@
  *  *
  */
 
-package com.ebay.api.security.types;
-
-import com.ebay.api.security.rest.client.TokenResponse;
-import com.google.gson.Gson;
+package com.ebay.api.client.auth.oauth2.model;
 
 import java.util.Date;
 
-public class AccessToken {
+public class RefreshToken {
     private String token;
     private Date expiresOn;
-    private TokenType tokenType;
+    private TokenType tokenType = TokenType.USER;
 
     public String getToken() {
         return token;
@@ -44,20 +41,17 @@ public class AccessToken {
         this.expiresOn = expiresOn;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("AccessToken{");
-        sb.append(", token='").append(token).append('\'');
-        sb.append(", expiresOn=").append(expiresOn);
-        sb.append('}');
-        return sb.toString();
-    }
-
-    public void setTokenType(TokenType tokenType) {
-        this.tokenType = tokenType;
-    }
-
     public TokenType getTokenType() {
         return tokenType;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("RefreshToken{");
+        sb.append("token='").append(token).append('\'');
+        sb.append(", expiresOn=").append(expiresOn);
+        sb.append(", tokenType=").append(tokenType);
+        sb.append('}');
+        return sb.toString();
     }
 }

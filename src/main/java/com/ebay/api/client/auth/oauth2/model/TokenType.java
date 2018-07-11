@@ -16,21 +16,9 @@
  *  *
  */
 
-package com.ebay.api.security.v1;
+package com.ebay.api.client.auth.oauth2.model;
 
-import com.ebay.api.security.types.*;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-public interface IEbayAuthApi {
-    OAuthResponse getApplicationToken(Environment environment, List<String> scopes) throws IOException;
-
-    String generateUserAuthorizeUrl(Environment environment, List<String> scopes, Optional<String> state);
-
-    OAuthResponse exchangeCode(Environment environment, String code) throws IOException;
-
-    OAuthResponse getAccessToken(Environment environment, String refreshToken, List<String> scopes) throws IOException;
+public enum TokenType {
+    USER,
+    APPLICATION;
 }

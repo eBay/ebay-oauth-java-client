@@ -16,7 +16,7 @@
  *  *
  */
 
-package com.ebay.api.security.rest.client;
+package com.ebay.api.client.auth.oauth2.model;
 
 /*
 Reference: https://developer.ebay.com/api-docs/static/oauth-auth-code-grant.html

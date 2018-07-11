@@ -16,13 +16,14 @@
  *  *
  */
 
-package com.ebay.api.security.impl;
+package com.ebay.api.client.auth.oauth2;
 
-import com.ebay.api.security.rest.client.TokenResponse;
-import com.ebay.api.security.types.AccessToken;
-import com.ebay.api.security.types.OAuthResponse;
-import com.ebay.api.security.types.RefreshToken;
-import com.ebay.api.security.types.TokenType;
+import com.ebay.api.client.auth.oauth2.model.AccessToken;
+import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
+import com.ebay.api.client.auth.oauth2.model.RefreshToken;
+import com.ebay.api.client.auth.oauth2.model.TokenResponse;
+import com.ebay.api.client.auth.oauth2.model.TokenType;
+
 import com.google.gson.Gson;
 import okhttp3.Response;
 import org.joda.time.DateTime;
@@ -32,9 +33,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-class EbayAuthUtilities {
+class OAuth2Util {
 
-    static OAuthResponse parseForApplicationToken(String s) {
+    static OAuthResponse parseApplicationToken(String s) {
         Gson gson = new Gson();
         TokenResponse tokenResponse = gson.fromJson(s, TokenResponse.class);
         AccessToken token = new AccessToken();
@@ -57,7 +58,7 @@ class EbayAuthUtilities {
         return Optional.of(scopeList);
     }
 
-    static OAuthResponse parseForUserToken(String s) {
+    static OAuthResponse parseUserToken(String s) {
         Gson gson = new Gson();
         TokenResponse tokenResponse = gson.fromJson(s, TokenResponse.class);
         AccessToken accessToken = new AccessToken();

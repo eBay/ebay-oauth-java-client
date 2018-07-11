@@ -22,3 +22,4 @@ gradle-app.setting
 
 ebay-config.yaml
 test-config.yaml
+/target/

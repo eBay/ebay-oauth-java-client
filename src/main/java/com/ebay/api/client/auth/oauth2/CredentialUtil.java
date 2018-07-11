@@ -16,21 +16,21 @@
  *  *
  */
 
-package com.ebay.api.security;
+package com.ebay.api.client.auth.oauth2;
 
-import com.ebay.api.security.types.Environment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CredentialHelper {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
+
+import com.ebay.api.client.auth.oauth2.model.Environment;
+
+public class CredentialUtil {
     private static Map<Environment, Credentials> envCredentialsMap = new HashMap<>();
-    private static final Logger logger = LoggerFactory.getLogger(CredentialHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(CredentialUtil.class);
 
     public enum CredentialType {
         APP_ID("appid"),
@@ -82,14 +82,16 @@ public class CredentialHelper {
     public static void load(InputStream fis) {
         logger.debug("CredentialHelper.load");
         Yaml yaml = new Yaml();
-        Map<String, ?> values = (Map<String, Map<String, String>>) yaml.loadAs(fis, Map.class);
+        @SuppressWarnings("unchecked")
+		Map<String, ?> values = (Map<String, Map<String, String>>) yaml.loadAs(fis, Map.class);
         iterateYaml(values);
     }
 
     public static void load(String yamlStr) {
         logger.debug("CredentialHelper.load");
         Yaml yaml = new Yaml();
-        Map<String, ?> values = (Map<String, Map<String, String>>) yaml.loadAs(yamlStr, Map.class);
+        @SuppressWarnings("unchecked")
+		Map<String, ?> values = (Map<String, Map<String, String>>) yaml.loadAs(yamlStr, Map.class);
         iterateYaml(values);
     }
 
@@ -104,7 +106,8 @@ public class CredentialHelper {
 
             Object o = values.get(key);
             if (o instanceof Map) {
-                Map<String, String> subValues = (Map<String, String>) o;
+                @SuppressWarnings("unchecked")
+				Map<String, String> subValues = (Map<String, String>) o;
                 Credentials credentials = new Credentials(subValues);
                 logger.debug(String.format("adding for %s - %s", environment, credentials.toString()));
                 envCredentialsMap.put(environment, credentials);

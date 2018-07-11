@@ -28,14 +28,14 @@ Add following to <dependencies/> section of your pom.xml -
 ----
 
 == Getting Started
-All interactions with this library can be performed using `IEbayAuthApi authApi = new EbayAuthApi();`
+All interactions with this library can be performed using `OAuth2Api oauth2Api = new OAuth2Api();`
 
 == Library Setup
 1. Ensure you have a config file in your source code of type http://yaml.org/[YAML]. Refer to ebay-config-sample.yaml.
 2. This file would hold all your application credentials such as AppId, DevId, and CertId. Refer to https://developer.ebay.com/api-docs/static/creating-edp-account.html[Creating eBay Developer Account] for details on how to get these credentials.
-3. Once the file is created, call `CredentialHelper.load(new FileInputStream(<your-config-location>));` to load the credentials.
+3. Once the file is created, call `CredentialUtil.load(new FileInputStream(<your-config-location>));` to load the credentials.
 4. It is recommended to load the credentials during startup time (initialization) to prevent runtime delays.
-5. Once the credentials are loaded, call any operation on `IEbayAuthApi`
+5. Once the credentials are loaded, call any operation on `OAuth2Api`
 
 == Types of Tokens
 There are mainly two types of tokens in usage.
@@ -47,18 +47,18 @@ An application token contains an application identity which is generated using `
 A user token (_access token or refresh token_) contains a user identity and the application's identity. This is usually generated using the `authorization_code` grant type or the `refresh_token` grant type.
 
 == Supported Grant Types for OAuth
-All of the regular OAuth 2.0 specifications such as `client_credentials`, `authorization_code`, and `refresh_token` are all supported. Refer to https://developer.ebay.com/api-docs/static/oauth-tokens.html[Developer Portal]
+All of the regular OAuth 2.0 specifications such as `client_credentials`, `authorization_code`, and `refresh_token` are all supported. Refer to https://developer.ebay.com/api-docs/static/oauth-tokens.html[eBay Developer Portal]
 
 === Grant Type: Client Credentials
-This grant type can be performed by simply using `IEbayAuthApi.getApplicationToken()`. Read more about this grant type at https://developer.ebay.com/api-docs/static/oauth-client-credentials-grant.html[oauth-client-credentials-grant]
+This grant type can be performed by simply using `OAuth2Api.getApplicationToken()`. Read more about this grant type at https://developer.ebay.com/api-docs/static/oauth-client-credentials-grant.html[oauth-client-credentials-grant]
 
 === Grant Type: Authorization Code
-This grant type can be performed by a two step process. Call `IEbayAuthApi.generateUserAuthorizeUrl()` to get the Authorization URL to redirect the user to. Once the user authenticates and approves the consent, the callback need to be captured by the redirect URL setup by the app and then call `IEbayAuthApi.exchangeCode()` to get the refresh and access tokens.
+This grant type can be performed by a two step process. Call `OAuth2Api.generateUserAuthorizationUrl()` to get the Authorization URL to redirect the user to. Once the user authenticates and approves the consent, the callback need to be captured by the redirect URL setup by the app and then call `OAuth2Api.exchangeCodeForAccessToken()` to get the refresh and access tokens.
 
 Read more about this grant type at https://developer.ebay.com/api-docs/static/oauth-authorization-code-grant.html[oauth-authorization-code-grant] and https://developer.ebay.com/api-docs/static/oauth-qref-auth-code-grant.html[Quick Reference]
 
 === Grant Type: Refresh Token
-This grant type can be performed by simply using `IEbayAuthApi.getAccessToken()`. Usually access tokens are short lived and if the access token is expired, the caller can use the refresh token to generate a new access token. Read more about it at https://developer.ebay.com/api-docs/static/oauth-qref-auth-code-grant.html[Using a refresh token to update a user access token]
+This grant type can be performed by simply using `OAuth2Api.getAccessToken()`. Usually access tokens are short lived and if the access token is expired, the caller can use the refresh token to generate a new access token. Read more about it at https://developer.ebay.com/api-docs/static/oauth-qref-auth-code-grant.html[Using a refresh token to update a user access token]
 
 == Contribution
 Contributions in terms of patches, features, or comments are always welcome. Refer to link:CONTRIBUTING.adoc[CONTRIBUTING] for guidelines. Submit github issues for any feature enhancements, bugs, or documentation problems as well as Questions and Comments.
