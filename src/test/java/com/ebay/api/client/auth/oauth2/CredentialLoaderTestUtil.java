@@ -18,7 +18,7 @@
 
 package com.ebay.api.client.auth.oauth2;
 
-import com.ebay.api.security.types.Environment;
+import com.ebay.api.client.auth.oauth2.model.Environment;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -90,7 +90,7 @@ public class CredentialLoaderTestUtil {
 
         String userCredentialKey = environment.equals(Environment.PRODUCTION) ? "production-user" : "sandbox-user";
         Object valuesObj = values.get(userCredentialKey);
-        if (null != valuesObj && valuesObj instanceof Map) {
+        if (valuesObj instanceof Map) {
             Map<String, String> credValues = (Map<String, String>) valuesObj;
             CRED_USERNAME = credValues.get("username");
             CRED_PASSWORD = credValues.get("password");

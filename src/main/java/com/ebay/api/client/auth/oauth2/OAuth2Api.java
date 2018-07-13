@@ -18,11 +18,10 @@
 
 package com.ebay.api.client.auth.oauth2;
 
+import com.ebay.api.client.auth.oauth2.CredentialUtil.Credentials;
 import com.ebay.api.client.auth.oauth2.model.AccessToken;
 import com.ebay.api.client.auth.oauth2.model.Environment;
 import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
-import com.ebay.api.client.auth.oauth2.CredentialUtil.Credentials;
-
 import okhttp3.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -165,10 +164,9 @@ public class OAuth2Api {
         }
     }
 
-    @Override
     public String generateIdTokenUrl(Environment environment, Optional<String> state, String nonce) {
         StringBuilder sb = new StringBuilder();
-        Credentials credentials = CredentialHelper.getCredentials(environment);
+        Credentials credentials = CredentialUtil.getCredentials(environment);
 
         sb.append(environment.getWebEndpoint()).append("?");
         sb.append("client_id=").append(credentials.get(APP_ID)).append("&");
@@ -179,7 +177,6 @@ public class OAuth2Api {
             sb.append("state=").append(state.get());
         }
         logger.debug("id_token_url=" + sb.toString());
-        return sb.toString();
         return sb.toString();
     }
 }

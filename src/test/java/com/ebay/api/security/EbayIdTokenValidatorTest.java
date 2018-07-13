@@ -18,10 +18,11 @@
 
 package com.ebay.api.security;
 
-import com.ebay.api.security.impl.EbayAuthApi;
+import com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil;
+import com.ebay.api.client.auth.oauth2.CredentialUtil;
+import com.ebay.api.client.auth.oauth2.OAuth2Api;
+import com.ebay.api.client.auth.oauth2.model.Environment;
 import com.ebay.api.security.types.EbayIdToken;
-import com.ebay.api.security.types.Environment;
-import com.ebay.api.security.v1.IEbayAuthApi;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -38,8 +39,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.ebay.api.security.CredentialLoaderTestUtil.CRED_PASSWORD;
-import static com.ebay.api.security.CredentialLoaderTestUtil.CRED_USERNAME;
+import static com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil.CRED_PASSWORD;
+import static com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil.CRED_USERNAME;
 import static com.ebay.api.security.openid.jwt.EbayIdTokenValidator.JWTExtractException;
 import static com.ebay.api.security.openid.jwt.EbayIdTokenValidator.validate;
 import static org.junit.Assert.*;
@@ -51,8 +52,8 @@ public class EbayIdTokenValidatorTest {
     @BeforeClass
     public static void testSetup() {
         CredentialLoaderTestUtil.commonLoadCredentials(EXECUTION_ENV);
-        assertNotNull(CredentialLoaderTestUtil.CRED_USERNAME, "Please check if test-config.yaml is setup correctly");
-        assertNotNull(CredentialLoaderTestUtil.CRED_PASSWORD, "Please check if test-config.yaml is setup correctly");
+        assertNotNull(CRED_USERNAME, "Please check if test-config.yaml is setup correctly");
+        assertNotNull(CRED_PASSWORD, "Please check if test-config.yaml is setup correctly");
     }
 
     @Test
@@ -79,7 +80,7 @@ public class EbayIdTokenValidatorTest {
         }
 
         assertNotNull(idToken);
-        String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+        String appId = CredentialUtil.getCredentials(EXECUTION_ENV).get(CredentialUtil.CredentialType.APP_ID);
         EbayIdToken ebayIdToken = validate(idToken, Collections.singletonList(appId));
         assertNotNull(ebayIdToken);
         assertEquals(CRED_USERNAME, ebayIdToken.getPreferedUserName());
@@ -95,7 +96,7 @@ public class EbayIdTokenValidatorTest {
         System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
 
         WebDriver driver = new ChromeDriver();
-        IEbayAuthApi authApi = new EbayAuthApi();
+        OAuth2Api authApi = new OAuth2Api();
         String idTokenUrl = authApi.generateIdTokenUrl(EXECUTION_ENV, Optional.of("current-page"), nonce);
 
         driver.get(idTokenUrl);
@@ -163,7 +164,7 @@ public class EbayIdTokenValidatorTest {
     @Test
     public void parseIDTokenErrorsEmpty() {
         try {
-            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            String appId = CredentialUtil.getCredentials(EXECUTION_ENV).get(CredentialUtil.CredentialType.APP_ID);
             validate("", Collections.singletonList(appId));
             fail("Exception expected");
         } catch (JWTExtractException e) {
@@ -175,7 +176,7 @@ public class EbayIdTokenValidatorTest {
     public void parseIDTokenErrorsMultipleParts() {
         try {
             String multiParts = "test.test.test.test";
-            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            String appId = CredentialUtil.getCredentials(EXECUTION_ENV).get(CredentialUtil.CredentialType.APP_ID);
             validate(multiParts, Collections.singletonList(appId));
             fail("Exception expected");
         } catch (JWTExtractException e) {
@@ -187,7 +188,7 @@ public class EbayIdTokenValidatorTest {
     public void parseIDTokenErrorsOnePartEmpty() {
         try {
             String multiParts = "test..test.test";
-            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            String appId = CredentialUtil.getCredentials(EXECUTION_ENV).get(CredentialUtil.CredentialType.APP_ID);
             validate(multiParts, Collections.singletonList(appId));
             fail("Exception expected");
         } catch (JWTExtractException e) {
@@ -199,7 +200,7 @@ public class EbayIdTokenValidatorTest {
     public void parseIDTokenSignatureValidationFailure() {
         String invalidToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjNiY2YwYjNjYzg2MmEwYWM3NzA5MmY3MmI0ZGZkYjIwYTgxMDBkZjAifQ.eyJhdWQiOiI0MDc0MDg3MTgxOTIuYXBwcy5lYmF5LmNvbSIsInN1YiI6ImJTQXE5cEJIV2NFbnJ4IiwiZXhwIjoxNTI3ODMzNTYzLCJpc3MiOiJodHRwczovL29hdXRoLmViYXkuY29tIiwiaWF0IjoxNTI3ODI5OTYzLCJub25jZSI6ImFhYmNlLWRkc2QtZWRmYSIsInByZWZlcnJlZF91c2VybmFtZSI6InRlc3RfdXNlciJ9.XuX3cPtACrwCcpD6O721lMB4I6Me20JTJhIaK1Ov-4Tq4hciK0EAEx-b7FM9_KLYbjMK-bSAq9pBHWcEnrxi2wMoJnXU84WJQMjK_yCYLNnpVxVHqovXMGTjHzMseFZ79md8FH3t3lEeHoPf5YXXOqZwpBhjEcm8Puz2QgAvF1FxLCfeuklfOxTSpBNIHgpd_HNDCWwefIIPz1Pc7kO5w4vmyBpmgB76ygbW_y1luuKbarAaeGgeP-y3t5DBmKE7JsfW9dOts2Aqq_o3s9hG75tjGVFcO7SQihZ2B04lbwyao3DKBJmBXDd7VhIyg6Gn3cT_ZnBUVP0L0g7ox3x06A";
         try {
-            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            String appId = CredentialUtil.getCredentials(EXECUTION_ENV).get(CredentialUtil.CredentialType.APP_ID);
             validate(invalidToken, Collections.singletonList(appId));
             fail("Exception expected");
         } catch (JWTExtractException e) {
@@ -211,7 +212,7 @@ public class EbayIdTokenValidatorTest {
     public void parseIDTokenMissingHeader() {
         try {
             String multiParts = ".test.test";
-            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            String appId = CredentialUtil.getCredentials(EXECUTION_ENV).get(CredentialUtil.CredentialType.APP_ID);
             validate(multiParts, Collections.singletonList(appId));
             fail("Exception expected");
         } catch (JWTExtractException e) {
@@ -223,7 +224,7 @@ public class EbayIdTokenValidatorTest {
     public void parseIdTokenMissingSign() {
         try {
             String multiParts = "test.test.";
-            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            String appId = CredentialUtil.getCredentials(EXECUTION_ENV).get(CredentialUtil.CredentialType.APP_ID);
             validate(multiParts, Collections.singletonList(appId));
             fail("Exception expected");
         } catch (JWTExtractException e) {
@@ -235,7 +236,7 @@ public class EbayIdTokenValidatorTest {
     public void parseIdTokenMissingPayload() {
         try {
             String multiParts = "test..test";
-            String appId = CredentialHelper.getCredentials(EXECUTION_ENV).get(CredentialHelper.CredentialType.APP_ID);
+            String appId = CredentialUtil.getCredentials(EXECUTION_ENV).get(CredentialUtil.CredentialType.APP_ID);
             validate(multiParts, Collections.singletonList(appId));
             fail("Exception expected");
         } catch (JWTExtractException e) {

@@ -21,6 +21,4 @@ package com.ebay.api.client.auth.oauth2.model;
 public enum TokenType {
     USER,
     APPLICATION,;
-
-    String generateIdTokenUrl(Environment environment, Optional<String> state, String nonce);
 }
