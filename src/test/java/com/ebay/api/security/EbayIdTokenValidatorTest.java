@@ -89,6 +89,8 @@ public class EbayIdTokenValidatorTest {
         assertEquals(appId, ebayIdToken.getAudience());
         assertTrue(ebayIdToken.getIssuedAt() < (new Date().getTime() / 1000));
         assertTrue(ebayIdToken.getExpiresAt() > (new Date().getTime() / 1000));
+        assertTrue(ebayIdToken.toString().contains(ebayIdToken.getPreferedUserName()));
+        assertNotNull(ebayIdToken.getSubject());
     }
 
     public String getIdTokenResponseUrl(String nonce) throws InterruptedException {
@@ -158,6 +160,42 @@ public class EbayIdTokenValidatorTest {
             fail("Exception expected");
         } catch (JWTExtractException e) {
             assertTrue(e.getMessage().contains("IDToken generated for Client: "));
+        }
+    }
+
+    @Test
+    public void parseIDTokenSignatureError() throws InterruptedException {
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
+            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
+            return;
+        }
+        if (!CredentialLoaderTestUtil.isUserCredentialsLoaded) {
+            System.err.println("\"Please check if test-config.yaml is setup correctly for app credentials");
+            return;
+        }
+
+        String nonce = UUID.randomUUID().toString();
+        String url = getIdTokenResponseUrl(nonce);
+        int idTokenIndex = url.indexOf("id_token=");
+        String idToken = null;
+        if (idTokenIndex > 0) {
+            Pattern pattern = Pattern.compile("id_token=(.*?)$");
+            Matcher matcher = pattern.matcher(url);
+            if (matcher.find()) {
+                idToken = matcher.group(1);
+            }
+        }
+
+        assertNotNull(idToken);
+        System.out.println(idToken);
+        String[] split = idToken.split("\\.");
+        String invalidIdToken = split[0] + "." + split[1] + "." + "invalidsignature";
+        try {
+            String appId = CredentialUtil.getCredentials(EXECUTION_ENV).get(CredentialUtil.CredentialType.APP_ID);
+            validate(invalidIdToken, Collections.singletonList(appId));
+            fail("Exception expected");
+        } catch (JWTExtractException e) {
+            assertEquals("Exception verifying signature: Signature length not correct: got 12 but was expecting 256", e.getMessage());
         }
     }
 

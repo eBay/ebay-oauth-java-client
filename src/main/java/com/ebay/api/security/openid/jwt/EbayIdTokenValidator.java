@@ -109,7 +109,7 @@ public class EbayIdTokenValidator {
         } catch (JWTExtractException e) {
             throw e;
         } catch (SignatureException e) {
-            throw new JWTExtractException("Exception verifying signature" + e.getMessage());
+            throw new JWTExtractException("Exception verifying signature: " + e.getMessage());
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new JWTExtractException("Exception creating signature object: " + e.getMessage());
         } catch (CertificateException | IOException e) {
