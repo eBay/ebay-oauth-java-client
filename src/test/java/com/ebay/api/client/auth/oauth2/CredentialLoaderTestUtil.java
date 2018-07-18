@@ -34,7 +34,7 @@ public class CredentialLoaderTestUtil {
     public static String CRED_PASSWORD = null;
 
     public static void loadAppCredentials() {
-        String runtimeParam = System.getProperty("credential_yaml");
+        String runtimeParam = getRuntimeParam("credential_yaml");
 
         if (runtimeParam != null && !runtimeParam.trim().isEmpty()) {
             System.out.println("Using Runtime Parameter: " + runtimeParam);
@@ -43,7 +43,7 @@ public class CredentialLoaderTestUtil {
         } else {
             //TODO: Create the file ebay-config.yaml using the ebay-config-sample.yaml before running these tests
             try {
-            	CredentialUtil.load(new FileInputStream("src/test/resources/ebay-config.yaml"));
+                CredentialUtil.load(new FileInputStream("src/test/resources/ebay-config.yaml"));
                 isAppCredentialsLoaded = true;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -52,8 +52,8 @@ public class CredentialLoaderTestUtil {
     }
 
     @SuppressWarnings("unchecked")
-	public static Map<String, Map<String, String>> loadUserCredentials() {
-        String runtimeParam = System.getProperty("usercred_yaml");
+    public static Map<String, Map<String, String>> loadUserCredentials() {
+        String runtimeParam = getRuntimeParam("usercred_yaml");
         Map<String, Map<String, String>> values = new HashMap<>();
 
         if (runtimeParam != null && !runtimeParam.trim().isEmpty()) {
@@ -73,17 +73,27 @@ public class CredentialLoaderTestUtil {
         return values;
     }
 
-    public static void commonLoadCredentials(Environment environment){
+    private static String getRuntimeParam(String varName) {
+        String propertyValue = System.getProperty(varName);
+        if (propertyValue == null || propertyValue.trim().isEmpty()) {
+            // Trying from Env Variable instead
+            propertyValue = System.getenv(varName);
+        }
+        System.out.println("Extracted value: " + propertyValue);
+        return propertyValue;
+    }
+
+    public static void commonLoadCredentials(Environment environment) {
         //TODO: Create the file ebay-config.yaml using the ebay-config-sample.yaml before running these tests
         CredentialLoaderTestUtil.loadAppCredentials();
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
             System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
             return;
         }
 
         // Loading the test user credentials for Sandbox
         Map<String, Map<String, String>> values = CredentialLoaderTestUtil.loadUserCredentials();
-        if(!CredentialLoaderTestUtil.isUserCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isUserCredentialsLoaded) {
             System.err.println("\"Please check if test-config.yaml is setup correctly for app credentials");
             return;
         }
