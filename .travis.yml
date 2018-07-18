@@ -1,2 +1,10 @@
 # Build config for ebay-java-oauth-client
 language: java
+
+addons:
+  apt:
+    packages:
+      - chromium-chromedriver
+
+before_script:
+  - ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver
