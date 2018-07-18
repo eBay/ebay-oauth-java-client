@@ -34,7 +34,7 @@ public class CredentialLoaderTestUtil {
     public static String CRED_PASSWORD = null;
 
     public static void loadAppCredentials() {
-        String runtimeParam = System.getProperty("credential.yaml");
+        String runtimeParam = System.getProperty("credential_yaml");
 
         if (runtimeParam != null && !runtimeParam.trim().isEmpty()) {
             System.out.println("Using Runtime Parameter: " + runtimeParam);
@@ -53,7 +53,7 @@ public class CredentialLoaderTestUtil {
 
     @SuppressWarnings("unchecked")
 	public static Map<String, Map<String, String>> loadUserCredentials() {
-        String runtimeParam = System.getProperty("usercred.yaml");
+        String runtimeParam = System.getProperty("usercred_yaml");
         Map<String, Map<String, String>> values = new HashMap<>();
 
         if (runtimeParam != null && !runtimeParam.trim().isEmpty()) {
