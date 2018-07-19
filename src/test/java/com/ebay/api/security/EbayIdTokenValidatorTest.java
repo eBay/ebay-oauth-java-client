@@ -95,7 +95,7 @@ public class EbayIdTokenValidatorTest {
 
     public String getIdTokenResponseUrl(String nonce) throws InterruptedException {
         // Optional, if not specified, WebDriver will search your path for chromedriver.
-        System.setProperty("webdriver.chrome.driver", "~/bin/chromedriver");
+        System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
 
         WebDriver driver = new ChromeDriver();
         OAuth2Api authApi = new OAuth2Api();
