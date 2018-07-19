@@ -1,10 +1,13 @@
 # Build config for ebay-java-oauth-client
 language: java
 
+sudo: required
 addons:
+  chrome: stable
   apt:
     packages:
       - chromium-chromedriver
+      - google-chrome-stable
 
 before_script:
   - ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver
