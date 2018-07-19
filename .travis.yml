@@ -4,7 +4,7 @@ dist: trusty
 
 env:
   global:
-    - CODECOV_TOKEN=:372944b4-8d6c-4c53-b3a2-f5de48cb2c4b
+    - CODECOV_TOKEN: 372944b4-8d6c-4c53-b3a2-f5de48cb2c4b
 
 os:
   - linux
