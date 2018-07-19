@@ -7,4 +7,4 @@ addons:
       - chromium-chromedriver
 
 before_script:
-  - ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
+  - ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver

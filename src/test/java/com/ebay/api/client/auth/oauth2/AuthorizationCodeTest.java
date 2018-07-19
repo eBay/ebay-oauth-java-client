@@ -126,7 +126,7 @@ public class AuthorizationCodeTest {
 
     private String getAuthorizationResponseUrl() throws InterruptedException {
         // Optional, if not specified, WebDriver will search your path for chromedriver.
-        System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
+//        System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
 
         WebDriver driver = new ChromeDriver();
         OAuth2Api auth2Api = new OAuth2Api();
