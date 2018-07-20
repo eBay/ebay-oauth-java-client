@@ -18,11 +18,10 @@
 
 package com.ebay.api.client.auth.oauth2;
 
+import com.ebay.api.client.auth.oauth2.CredentialUtil.Credentials;
 import com.ebay.api.client.auth.oauth2.model.AccessToken;
 import com.ebay.api.client.auth.oauth2.model.Environment;
 import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
-import com.ebay.api.client.auth.oauth2.CredentialUtil.Credentials;
-
 import okhttp3.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -38,7 +37,7 @@ import static com.ebay.api.client.auth.oauth2.OAuth2Util.buildScopeForRequest;
 
 public class OAuth2Api {
     private static final Logger logger = LoggerFactory.getLogger(OAuth2Api.class);
-    private static final String CRED_SEPERATOR = ":";
+    public static final String CRED_SEPERATOR = ":";
     private static TimedCacheValue appAccessToken = null;
 
     private static class TimedCacheValue {
@@ -163,5 +162,21 @@ public class OAuth2Api {
         } else {
             return OAuth2Util.handleError(response);
         }
+    }
+
+    public String generateIdTokenUrl(Environment environment, Optional<String> state, String nonce) {
+        StringBuilder sb = new StringBuilder();
+        Credentials credentials = CredentialUtil.getCredentials(environment);
+
+        sb.append(environment.getWebEndpoint()).append("?");
+        sb.append("client_id=").append(credentials.get(APP_ID)).append("&");
+        sb.append("response_type=id_token").append("&");
+        sb.append("redirect_uri=").append(credentials.get(REDIRECT_URI)).append("&");
+        sb.append("nonce=").append(nonce).append("&");
+        if (state.isPresent()) {
+            sb.append("state=").append(state.get());
+        }
+        logger.debug("id_token_url=" + sb.toString());
+        return sb.toString();
     }
 }

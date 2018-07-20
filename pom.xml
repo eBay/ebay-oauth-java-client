@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.ebay.auth</groupId>
     <artifactId>ebay-oauth-java-client</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>eBay OAuth Client which helps in easy integration</description>
@@ -29,9 +29,7 @@
 
     <scm>
         <connection>scm:git:git@github.com:eBay/ebay-oauth-java-client.git</connection>
-        <!--<developerConnection>scm:git:ssh://github.com/eBay/ebay-oauth-java-client.git</developerConnection>-->
         <url>https://github.com/ebay/ebay-oauth-java-client</url>
-        <!--<tag>HEAD</tag>-->
       <tag>HEAD</tag>
   </scm>
 
@@ -142,7 +140,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.6.201602180812</version>
+                <version>0.7.9</version>
                 <configuration>
                     <destFile>${sonar.jacoco.reportPath}</destFile>
                     <append>true</append>

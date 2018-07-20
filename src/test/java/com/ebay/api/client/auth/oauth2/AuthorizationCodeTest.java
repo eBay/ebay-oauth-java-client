@@ -18,6 +18,8 @@
 
 package com.ebay.api.client.auth.oauth2;
 
+import com.ebay.api.client.auth.oauth2.model.Environment;
+import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -27,25 +29,18 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.ebay.api.client.auth.oauth2.model.Environment;
-import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil.CRED_PASSWORD;
+import static com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil.CRED_USERNAME;
+import static org.junit.Assert.*;
 
 public class AuthorizationCodeTest {
-    private static String CREDENTIAL_USERNAME = null;
-    private static String CREDENTIAL_PASSWORD = null;
     private static final List<String> SCOPE_LIST = Arrays.asList(new String[]{"https://api.ebay.com/oauth/api_scope", "https://api.ebay.com/oauth/api_scope/sell.marketing.readonly"});
     private static final List<String> authorizationScopesList = Arrays.asList(new String[]{"https://api.ebay.com/oauth/api_scope", "https://api.ebay.com/oauth/api_scope/sell.marketing.readonly"});
 
@@ -54,36 +49,15 @@ public class AuthorizationCodeTest {
     private static final Environment EXECUTION_ENV = Environment.SANDBOX;
 
     @BeforeClass
-    public static void testSetup() throws FileNotFoundException {
-        // Loading the app credentials
-        CredentialLoaderTestUtil.loadAppCredentials();
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
-            System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
-            return;
-        }
-
-        // Loading the test user credentials for Sandbox
-        Map<String, Map<String, String>> values = CredentialLoaderTestUtil.loadUserCredentials();
-        if(!CredentialLoaderTestUtil.isUserCredentialsLoaded){
-            System.err.println("\"Please check if test-config.yaml is setup correctly for app credentials");
-            return;
-        }
-
-        String userCredentialKey = EXECUTION_ENV.equals(Environment.PRODUCTION) ? "production-user" : "sandbox-user";
-        Object valuesObj = values.get(userCredentialKey);
-        if (null != valuesObj && valuesObj instanceof Map) {
-            @SuppressWarnings("unchecked")
-			Map<String, String> credentialValues = (Map<String, String>) valuesObj;
-            CREDENTIAL_USERNAME = credentialValues.get("username");
-            CREDENTIAL_PASSWORD = credentialValues.get("password");
-        }
-        assertNotNull(CREDENTIAL_USERNAME, "Please check if test-config.yaml is setup correctly");
-        assertNotNull(CREDENTIAL_PASSWORD, "Please check if test-config.yaml is setup correctly");
+    public static void testSetup() {
+        CredentialLoaderTestUtil.commonLoadCredentials(EXECUTION_ENV);
+        assertNotNull(CRED_USERNAME, "Please check if test-config.yaml is setup correctly");
+        assertNotNull(CRED_PASSWORD, "Please check if test-config.yaml is setup correctly");
     }
 
     @Test
     public void testConfigLoadYamlFile() {
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
             System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
             return;
         }
@@ -98,11 +72,11 @@ public class AuthorizationCodeTest {
 
     @Test
     public void testExchangeAuthorizationCode() throws InterruptedException, IOException {
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
             System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
             return;
         }
-        if(!CredentialLoaderTestUtil.isUserCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isUserCredentialsLoaded) {
             System.err.println("\"Please check if test-config.yaml is setup correctly for user credentials");
             return;
         }
@@ -122,24 +96,24 @@ public class AuthorizationCodeTest {
 
     @Test
     public void testExchangeRefreshForAccessToken() throws InterruptedException, IOException {
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
             System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
             return;
         }
-        if(!CredentialLoaderTestUtil.isUserCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isUserCredentialsLoaded) {
             System.err.println("\"Please check if test-config.yaml is setup correctly for user credentials");
             return;
         }
 
         String refreshToken = null;
         String authorizationCode = getAuthorizationCode();
-        if(authorizationCode != null){
-        	OAuth2Api oauth2Api = new OAuth2Api();
-        	OAuthResponse oauth2Response = oauth2Api.exchangeCodeForAccessToken(EXECUTION_ENV, authorizationCode);
-        	refreshToken = oauth2Response.getRefreshToken().get().getToken();
+        if (authorizationCode != null) {
+            OAuth2Api oauth2Api = new OAuth2Api();
+            OAuthResponse oauth2Response = oauth2Api.exchangeCodeForAccessToken(EXECUTION_ENV, authorizationCode);
+            refreshToken = oauth2Response.getRefreshToken().get().getToken();
         }
         assertNotNull(refreshToken);
-  
+
         OAuth2Api oauth2Api = new OAuth2Api();
         OAuthResponse accessTokenResponse = oauth2Api.getAccessToken(EXECUTION_ENV, refreshToken, SCOPE_LIST);
         assertNotNull(accessTokenResponse);
@@ -162,11 +136,11 @@ public class AuthorizationCodeTest {
         Thread.sleep(5000);
 
         WebElement userId = (new WebDriverWait(driver, 10))
-                .until(ExpectedConditions.visibilityOf(driver.findElement(By.name("userid"))));
-        WebElement password = driver.findElement(By.name("pass"));
-        
-        userId.sendKeys(CREDENTIAL_USERNAME);
-        password.sendKeys(CREDENTIAL_PASSWORD);
+                .until(ExpectedConditions.visibilityOf(driver.findElement(By.cssSelector("input[type='text']"))));
+        WebElement password = driver.findElement(By.cssSelector("input[type='password']"));
+
+        userId.sendKeys(CRED_USERNAME);
+        password.sendKeys(CRED_PASSWORD);
         driver.findElement(By.name("sgnBt")).submit();
 
         Thread.sleep(5000);
@@ -186,24 +160,24 @@ public class AuthorizationCodeTest {
         driver.quit();
         return url;
     }
-    
-    private String getAuthorizationCode() throws InterruptedException { 
-    	String url = getAuthorizationResponseUrl();
+
+    private String getAuthorizationCode() throws InterruptedException {
+        String url = getAuthorizationResponseUrl();
         int codeIndex = url.indexOf("code=");
         String authorizationCode = null;
         if (codeIndex > 0) {
             Pattern pattern = Pattern.compile("code=(.*?)&");
             Matcher matcher = pattern.matcher(url);
             if (matcher.find()) {
-            	authorizationCode = matcher.group(1);
+                authorizationCode = matcher.group(1);
             }
         }
         return authorizationCode;
     }
-    
+
     @Test
     public void testGenerateAuthorizationUrlSandbox() {
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
             System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
             return;
         }
@@ -216,7 +190,7 @@ public class AuthorizationCodeTest {
 
     @Test
     public void testGenerateAuthorizationUrlProduction() {
-        if(!CredentialLoaderTestUtil.isAppCredentialsLoaded){
+        if (!CredentialLoaderTestUtil.isAppCredentialsLoaded) {
             System.err.println("\"Please check if ebay-config.yaml is setup correctly for app credentials");
             return;
         }
