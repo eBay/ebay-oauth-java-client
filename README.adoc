@@ -8,6 +8,11 @@ endif::[]
 
 image:https://travis-ci.org/eBay/ebay-oauth-java-client.svg?branch=master["Build Status", link="https://travis-ci.org/eBay/ebay-oauth-java-client"]
 
+image:https://codecov.io/gh/eBay/ebay-oauth-java-client/branch/master/graph/badge.svg["Code Coverage, link="https://codecov.io/gh/eBay/ebay-oauth-java-client"]
+
+image:https://img.shields.io/github/license/eBay/ebay-oauth-java-client.svg["GitHub license",link="https://github.com/eBay/ebay-oauth-java-client/blob/master/LICENSE"]
+
+
 eBay OAuth client library is a simple and easy-to-use library for integrating with eBay OAuth and designed to be used for OAuth 2.0 specification supported by eBay. There are multiple standard clients that can be used with eBay OAuth, such as Spring OAuth client. However, this library in addition to functioning as a simple eBay OAuth client, helps with additional features such as cached App tokens. There are also future enhancements planned to add id_token support, 'login with eBay' support etc.,
 
 == What is OAuth 2.0
