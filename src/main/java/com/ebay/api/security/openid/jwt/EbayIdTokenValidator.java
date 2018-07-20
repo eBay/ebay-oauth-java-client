@@ -118,7 +118,7 @@ public class EbayIdTokenValidator {
         return isValid;
     }
 
-    public static EbayIdToken extractPayload(String[] tokens) {
+    private static EbayIdToken extractPayload(String[] tokens) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             String base64decodedPayload = new String(Base64.decodeBase64(tokens[1]));

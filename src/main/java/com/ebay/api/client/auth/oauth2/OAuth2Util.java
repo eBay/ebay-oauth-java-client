@@ -46,7 +46,7 @@ class OAuth2Util {
         return oauthResponse;
     }
 
-    public static Date generateExpiration(int expiresIn) {
+    private static Date generateExpiration(int expiresIn) {
         return DateTime.now().plusSeconds(expiresIn).toDate();
     }
 
