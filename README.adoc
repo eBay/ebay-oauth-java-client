@@ -30,7 +30,7 @@ Add following to <dependencies/> section of your pom.xml as given below
 <dependency>
     <groupId>com.ebay.auth</groupId>
     <artifactId>ebay-oauth-java-client</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1</version>
 </dependency>
 ----
 
@@ -40,9 +40,9 @@ All interactions with this library can be performed using `OAuth2Api oauth2Api =
 == Library Setup
 1. Ensure you have a config file in your source code of type http://yaml.org/[YAML]. Refer to ebay-config-sample.yaml.
 2. This file would hold all your application credentials such as AppId, DevId, and CertId. Refer to https://developer.ebay.com/api-docs/static/creating-edp-account.html[Creating eBay Developer Account] for details on how to get these credentials.
-3. Once the file is created, call `CredentialUtil.load(new FileInputStream(<your-config-location>));` to load the credentials.
+3. Once the file is created, call `CredentialHelper.load(new FileInputStream(<your-config-location>));` to load the credentials.
 4. It is recommended to load the credentials during startup time (initialization) to prevent runtime delays.
-5. Once the credentials are loaded, call any operation on `OAuth2Api`
+5. Once the credentials are loaded, call any operation on `EbayAuthApi`
 
 == Types of Tokens
 There are mainly two types of tokens in usage.
