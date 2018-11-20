@@ -205,7 +205,7 @@ public class EbayIdTokenValidatorTest {
             validate(invalidIdToken, Collections.singletonList(appId));
             fail("Exception expected");
         } catch (JWTExtractException e) {
-            assertEquals("Exception verifying signature: Signature length not correct: got 12 but was expecting 256", e.getMessage());
+            assertEquals("signature verification failed", e.getMessage());
         }
     }
 
