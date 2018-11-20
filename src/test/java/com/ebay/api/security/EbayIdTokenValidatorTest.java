@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
 
 public class EbayIdTokenValidatorTest {
     //NOTE: Change this env to Environment.PRODUCTION to run this test in PRODUCTION
-    private static final Environment EXECUTION_ENV = Environment.SANDBOX;
+    private static final Environment EXECUTION_ENV = Environment.PRODUCTION;
 
     @BeforeClass
     public static void testSetup() {
@@ -205,7 +205,7 @@ public class EbayIdTokenValidatorTest {
             validate(invalidIdToken, Collections.singletonList(appId));
             fail("Exception expected");
         } catch (JWTExtractException e) {
-            assertEquals("signature verification failed", e.getMessage());
+            assertEquals("Exception verifying signature: Signature length not correct: got 12 but was expecting 256", e.getMessage());
         }
     }
 
