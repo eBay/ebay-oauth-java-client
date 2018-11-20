@@ -12,7 +12,6 @@ image:https://codecov.io/gh/eBay/ebay-oauth-java-client/branch/master/graph/badg
 
 image:https://img.shields.io/github/license/eBay/ebay-oauth-java-client.svg["GitHub license",link="https://github.com/eBay/ebay-oauth-java-client/blob/master/LICENSE"]
 
-
 eBay OAuth client library is a simple and easy-to-use library for integrating with eBay OAuth and designed to be used for OAuth 2.0 specification supported by eBay. There are multiple standard clients that can be used with eBay OAuth, such as Spring OAuth client. However, this library in addition to functioning as a simple eBay OAuth client, helps with additional features such as cached App tokens. There are also future enhancements planned to add id_token support, 'login with eBay' support etc.,
 
 == What is OAuth 2.0
@@ -66,6 +65,16 @@ Read more about this grant type at https://developer.ebay.com/api-docs/static/oa
 
 === Grant Type: Refresh Token
 This grant type can be performed by simply using `OAuth2Api.getAccessToken()`. Usually access tokens are short lived and if the access token is expired, the caller can use the refresh token to generate a new access token. Read more about it at https://developer.ebay.com/api-docs/static/oauth-qref-auth-code-grant.html[Using a refresh token to update a user access token]
+
+=== Grant Type: Id Token (OpenID Connect)
+This grant type is added to support the OpenID connect protocol for generating an *Id token* which helps provide identity federation without any API access. This protocol is usually helpful when a functionality such as "Login via eBay" is required without any need for access tokens.
+
+This is a two step process. The URL to redirect the user can be generated via `OAuth2Api.generateIdTokenUrl()`. Once the user authenticates to eBay site, the callback redirect URL will be invoked with the id_token as an additional parameter. The validity of the `id_token` can be verified and the verified attributes extracted using `EbayIdTokenValidator.validate()`. Ensure that only the authorized clientIds are passed to the function to verify if the id_token has been issued to one of those clients only.
+
+This method also verifies the signature, the expiration and issuer of the `id_token` before returning back the verified attributes.
+
+NOTE: It is also a good practice to send a unique nonce in every request and verify if the id_token has been issued only for that nonce.
+
 
 == Contribution
 Contributions in terms of patches, features, or comments are always welcome. Refer to link:CONTRIBUTING.adoc[CONTRIBUTING] for guidelines. Submit Github issues for any feature enhancements, bugs, or documentation problems as well as questions and comments.
