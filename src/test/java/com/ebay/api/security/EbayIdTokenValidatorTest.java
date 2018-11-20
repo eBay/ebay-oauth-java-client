@@ -26,6 +26,7 @@ import com.ebay.api.security.types.EbayIdToken;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -110,8 +111,17 @@ public class EbayIdTokenValidatorTest {
         WebElement password = driver.findElement(By.cssSelector("input[type='password']"));
         userId.sendKeys(CRED_USERNAME);
         password.sendKeys(CRED_PASSWORD);
-        driver.findElement(By.name("sgnBt")).submit();
+        WebElement sgnBt = null;
+        try {
+            sgnBt = driver.findElement(By.name("sgnBt"));
+        } catch (NoSuchElementException e) {
+            // ignore exception
+        }
+        if (sgnBt == null) {
+            sgnBt = driver.findElement(By.id("sgnBt"));
+        }
 
+        sgnBt.submit();
         Thread.sleep(5000);
 
         String url = null;

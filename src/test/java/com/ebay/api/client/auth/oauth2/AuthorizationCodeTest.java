@@ -41,8 +41,8 @@ import static com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil.CRED_USER
 import static org.junit.Assert.*;
 
 public class AuthorizationCodeTest {
-    private static final List<String> SCOPE_LIST = Arrays.asList(new String[]{"https://api.ebay.com/oauth/api_scope", "https://api.ebay.com/oauth/api_scope/sell.marketing.readonly"});
-    private static final List<String> authorizationScopesList = Arrays.asList(new String[]{"https://api.ebay.com/oauth/api_scope", "https://api.ebay.com/oauth/api_scope/sell.marketing.readonly"});
+    private static final List<String> SCOPE_LIST = Arrays.asList("https://api.ebay.com/oauth/api_scope", "https://api.ebay.com/oauth/api_scope/sell.marketing.readonly");
+    private static final List<String> authorizationScopesList = Arrays.asList("https://api.ebay.com/oauth/api_scope", "https://api.ebay.com/oauth/api_scope/sell.marketing.readonly");
 
 
     //NOTE: Change this env to Environment.PRODUCTION to run this test in PRODUCTION
@@ -88,7 +88,10 @@ public class AuthorizationCodeTest {
         OAuthResponse oauth2Response = auth2Api.exchangeCodeForAccessToken(EXECUTION_ENV, authorizationCode);
         assertNotNull(oauth2Response);
 
+        assertTrue(oauth2Response.getRefreshToken().isPresent());
         assertNotNull(oauth2Response.getRefreshToken().get());
+
+        assertTrue(oauth2Response.getAccessToken().isPresent());
         assertNotNull(oauth2Response.getAccessToken().get());
         assertNull(oauth2Response.getErrorMessage());
         System.out.println("Token Exchange Completed\n" + oauth2Response);
@@ -110,6 +113,7 @@ public class AuthorizationCodeTest {
         if (authorizationCode != null) {
             OAuth2Api oauth2Api = new OAuth2Api();
             OAuthResponse oauth2Response = oauth2Api.exchangeCodeForAccessToken(EXECUTION_ENV, authorizationCode);
+            assertTrue(oauth2Response.getRefreshToken().isPresent());
             refreshToken = oauth2Response.getRefreshToken().get().getToken();
         }
         assertNotNull(refreshToken);
@@ -118,8 +122,11 @@ public class AuthorizationCodeTest {
         OAuthResponse accessTokenResponse = oauth2Api.getAccessToken(EXECUTION_ENV, refreshToken, SCOPE_LIST);
         assertNotNull(accessTokenResponse);
 
+        assertTrue(accessTokenResponse.getAccessToken().isPresent());
         assertNotNull(accessTokenResponse.getAccessToken().get());
         assertNull(accessTokenResponse.getErrorMessage());
+
+        assertTrue(accessTokenResponse.getRefreshToken().isPresent());
         assertNull(accessTokenResponse.getRefreshToken().get().getToken());
         System.out.println("Refresh To Access Completed\n" + accessTokenResponse);
     }
