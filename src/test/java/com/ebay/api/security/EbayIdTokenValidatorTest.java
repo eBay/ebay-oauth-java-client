@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
 
 public class EbayIdTokenValidatorTest {
     //NOTE: Change this env to Environment.PRODUCTION to run this test in PRODUCTION
-    private static final Environment EXECUTION_ENV = Environment.PRODUCTION;
+    private static final Environment EXECUTION_ENV = Environment.SANDBOX;
 
     @BeforeClass
     public static void testSetup() {
