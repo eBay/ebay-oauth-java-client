@@ -31,6 +31,10 @@ public enum Environment {
         this.webEndpoint = webEndpoint;
         this.apiEndpoint = apiEndpoint;
     }
+    
+    public String getConfigIdentifier() {
+        return configIdentifier;
+    }
 
     public String getWebEndpoint() {
         return webEndpoint;

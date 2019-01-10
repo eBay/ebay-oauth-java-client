@@ -18,22 +18,29 @@
 
 package com.ebay.api.client.auth.oauth2;
 
-import com.ebay.api.client.auth.oauth2.CredentialUtil.Credentials;
-import com.ebay.api.client.auth.oauth2.model.AccessToken;
-import com.ebay.api.client.auth.oauth2.model.Environment;
-import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
-import okhttp3.*;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import static com.ebay.api.client.auth.oauth2.CredentialUtil.CredentialType.APP_ID;
+import static com.ebay.api.client.auth.oauth2.CredentialUtil.CredentialType.CERT_ID;
+import static com.ebay.api.client.auth.oauth2.CredentialUtil.CredentialType.REDIRECT_URI;
+import static com.ebay.api.client.auth.oauth2.OAuth2Util.buildScopeForRequest;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
-import static com.ebay.api.client.auth.oauth2.CredentialUtil.CredentialType.*;
-import static com.ebay.api.client.auth.oauth2.OAuth2Util.buildScopeForRequest;
+import java.util.concurrent.ConcurrentHashMap;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.ebay.api.client.auth.oauth2.CredentialUtil.Credentials;
+import com.ebay.api.client.auth.oauth2.model.AccessToken;
+import com.ebay.api.client.auth.oauth2.model.CachedOAuthResponse;
+import com.ebay.api.client.auth.oauth2.model.Environment;
+import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
 
 public class OAuth2Api {
     private static final Logger logger = LoggerFactory.getLogger(OAuth2Api.class);
@@ -41,18 +48,21 @@ public class OAuth2Api {
     private static TimedCacheValue appAccessToken = null;
 
     private static class TimedCacheValue {
-        private OAuthResponse value;
-        private DateTime expiresAt;
 
-        private TimedCacheValue(OAuthResponse value, DateTime expiresAt) {
-            this.value = value;
+        private static Map<String, CachedOAuthResponse> oAuthResponsePerEnvironment = new ConcurrentHashMap<>();
+        
+        private TimedCacheValue(Environment environment, OAuthResponse value, DateTime expiresAt) {
             //Setting a buffer of 5 minutes for refresh
-            this.expiresAt = expiresAt.minusMinutes(5);
+            DateTime expiresAtForCache = expiresAt.minusMinutes(5);
+            
+            CachedOAuthResponse cachedOAuthResponse = new CachedOAuthResponse(value, expiresAtForCache);
+            oAuthResponsePerEnvironment.put(environment.getConfigIdentifier(), cachedOAuthResponse);
         }
 
-        private OAuthResponse getValue() {
-            if (DateTime.now().isBefore(this.expiresAt)) {
-                return this.value;
+        private OAuthResponse getValue(Environment environment) {
+            CachedOAuthResponse cachedOAuthResponse = environment != null ? oAuthResponsePerEnvironment.get(environment.getConfigIdentifier()) : null;
+            if (cachedOAuthResponse != null && DateTime.now().isBefore(cachedOAuthResponse.getExpiresAt())) {
+                return cachedOAuthResponse.getValue();
             }
             //Since the value is expired, return null
             return null;
@@ -60,9 +70,9 @@ public class OAuth2Api {
     }
 
     public OAuthResponse getApplicationToken(Environment environment, List<String> scopes) throws IOException {
-        if (appAccessToken != null && appAccessToken.getValue() != null) {
+        if (appAccessToken != null && appAccessToken.getValue(environment) != null) {
             logger.debug("application access token returned from cache");
-            return appAccessToken.getValue();
+            return appAccessToken.getValue(environment);
         }
 
         OkHttpClient client = new OkHttpClient();
@@ -83,7 +93,7 @@ public class OAuth2Api {
             logger.debug("Network call to generate new token is successfull");
             OAuthResponse oAuthResponse = OAuth2Util.parseApplicationToken(response.body().string());
             AccessToken accessToken = oAuthResponse.getAccessToken().get();
-            appAccessToken = new TimedCacheValue(oAuthResponse, new DateTime(accessToken.getExpiresOn()));
+            appAccessToken = new TimedCacheValue(environment, oAuthResponse, new DateTime(accessToken.getExpiresOn()));
             return oAuthResponse;
         } else {
             return OAuth2Util.handleError(response);
