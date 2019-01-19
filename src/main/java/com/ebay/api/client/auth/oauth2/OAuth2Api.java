@@ -26,19 +26,19 @@ import okhttp3.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
+import java.util.concurrent.ConcurrentHashMap;
 import static com.ebay.api.client.auth.oauth2.CredentialUtil.CredentialType.*;
 import static com.ebay.api.client.auth.oauth2.OAuth2Util.buildScopeForRequest;
 
 public class OAuth2Api {
     private static final Logger logger = LoggerFactory.getLogger(OAuth2Api.class);
     public static final String CRED_SEPERATOR = ":";
-    private static TimedCacheValue appAccessToken = null;
+    private static Map<Environment, TimedCacheValue> appAccessTokenMap = new ConcurrentHashMap<>();
 
     private static class TimedCacheValue {
         private OAuthResponse value;
@@ -60,6 +60,7 @@ public class OAuth2Api {
     }
 
     public OAuthResponse getApplicationToken(Environment environment, List<String> scopes) throws IOException {
+        TimedCacheValue appAccessToken = appAccessTokenMap.get(environment);
         if (appAccessToken != null && appAccessToken.getValue() != null) {
             logger.debug("application access token returned from cache");
             return appAccessToken.getValue();
@@ -84,6 +85,7 @@ public class OAuth2Api {
             OAuthResponse oAuthResponse = OAuth2Util.parseApplicationToken(response.body().string());
             AccessToken accessToken = oAuthResponse.getAccessToken().get();
             appAccessToken = new TimedCacheValue(oAuthResponse, new DateTime(accessToken.getExpiresOn()));
+            appAccessTokenMap.put(environment, appAccessToken);
             return oAuthResponse;
         } else {
             return OAuth2Util.handleError(response);
