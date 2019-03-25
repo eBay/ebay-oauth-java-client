@@ -18,21 +18,18 @@
 
 package com.ebay.api.client.auth.oauth2;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.ebay.api.client.auth.oauth2.model.AccessToken;
+import com.ebay.api.client.auth.oauth2.model.Environment;
+import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.ebay.api.client.auth.oauth2.model.AccessToken;
-import com.ebay.api.client.auth.oauth2.model.Environment;
-import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
+import static org.junit.Assert.*;
 
 public class ClientCredentialsTest {
     private static final List<String> SCOPE_LIST_SANDBOX = Arrays.asList(new String[]{"https://api.ebay.com/oauth/api_scope", "https://api.ebay.com/oauth/api_scope/buy.item.feed"});
@@ -88,7 +85,7 @@ public class ClientCredentialsTest {
         // Attempting with incorrect scope
         OAuthResponse oauth2Response = auth2Api.getApplicationToken(Environment.PRODUCTION, INVALID_SCOPE_LIST);
         Optional<AccessToken> applicationToken = oauth2Response.getAccessToken();
-        assertNull(applicationToken);
+        assertFalse(applicationToken.isPresent());
         assertNotNull(oauth2Response.getErrorMessage());
         assertTrue(oauth2Response.getErrorMessage().contains(ERROR_INVALID_SCOPE));
     }
