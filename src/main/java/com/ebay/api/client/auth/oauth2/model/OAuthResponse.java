@@ -51,9 +51,7 @@ public class OAuthResponse {
             return Optional.empty();
         } else {
             return refreshToken;
-        }        
-        
-        return refreshToken;
+        }
     }
 
     public void setRefreshToken(Optional<RefreshToken> refreshToken) {
