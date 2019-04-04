@@ -35,7 +35,11 @@ public class OAuthResponse {
     }
 
     public Optional<AccessToken> getAccessToken() {
-        return accessToken;
+        if (accessToken == null) {
+            return Optional.empty();
+        } else {
+            return accessToken;
+        }
     }
 
     public void setAccessToken(Optional<AccessToken> accessToken) {
@@ -43,7 +47,11 @@ public class OAuthResponse {
     }
 
     public Optional<RefreshToken> getRefreshToken() {
-        return refreshToken;
+        if (refreshToken == null) {
+            return Optional.empty();
+        } else {
+            return refreshToken;
+        }
     }
 
     public void setRefreshToken(Optional<RefreshToken> refreshToken) {

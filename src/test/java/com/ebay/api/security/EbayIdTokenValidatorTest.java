@@ -84,7 +84,6 @@ public class EbayIdTokenValidatorTest {
         String appId = CredentialUtil.getCredentials(EXECUTION_ENV).get(CredentialUtil.CredentialType.APP_ID);
         EbayIdToken ebayIdToken = validate(idToken, Collections.singletonList(appId));
         assertNotNull(ebayIdToken);
-        assertEquals(CRED_USERNAME, ebayIdToken.getPreferedUserName());
         assertEquals("oauth.ebay.com", ebayIdToken.getIssuer());
         assertEquals(nonce, ebayIdToken.getNonce());
         assertEquals(appId, ebayIdToken.getAudience());
