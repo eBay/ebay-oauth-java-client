@@ -36,8 +36,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil.CRED_PASSWORD;
-import static com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil.CRED_USERNAME;
+import static com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil.*;
 import static org.junit.Assert.*;
 
 public class AuthorizationCodeTest {
@@ -62,7 +61,7 @@ public class AuthorizationCodeTest {
         }
 
         String credentialHelperStr = CredentialUtil.dump();
-        System.out.println(credentialHelperStr);
+        printDetailedLog(credentialHelperStr);
         assertTrue(credentialHelperStr.contains("APP_ID"));
         assertTrue(credentialHelperStr.contains("DEV_ID"));
         assertTrue(credentialHelperStr.contains("CERT_ID"));
@@ -93,7 +92,7 @@ public class AuthorizationCodeTest {
         assertTrue(oauth2Response.getAccessToken().isPresent());
         assertNotNull(oauth2Response.getAccessToken().get());
         assertNull(oauth2Response.getErrorMessage());
-        System.out.println("Token Exchange Completed\n" + oauth2Response);
+        printDetailedLog("Token Exchange Completed\n" + oauth2Response);
     }
 
     @Test
@@ -127,7 +126,7 @@ public class AuthorizationCodeTest {
 
         assertTrue(accessTokenResponse.getRefreshToken().isPresent());
         assertNull(accessTokenResponse.getRefreshToken().get().getToken());
-        System.out.println("Refresh To Access Completed\n" + accessTokenResponse);
+        printDetailedLog("Refresh To Access Completed\n" + accessTokenResponse);
     }
 
     private String getAuthorizationResponseUrl() throws InterruptedException {
@@ -153,7 +152,7 @@ public class AuthorizationCodeTest {
 
         String url = null;
         if (driver.getCurrentUrl().contains("code=")) {
-            System.out.println("Code Obtained");
+            printDetailedLog("Code Obtained");
             url = driver.getCurrentUrl();
         } else {
             WebElement agreeBtn = (new WebDriverWait(driver, 10))
@@ -190,7 +189,7 @@ public class AuthorizationCodeTest {
 
         OAuth2Api oauth2Api = new OAuth2Api();
         String authorizationUrl = oauth2Api.generateUserAuthorizationUrl(Environment.SANDBOX, authorizationScopesList, Optional.of("current-page"));
-        System.out.println(authorizationUrl);
+        printDetailedLog(authorizationUrl);
         assertNotNull(authorizationUrl);
     }
 
@@ -203,7 +202,7 @@ public class AuthorizationCodeTest {
 
         OAuth2Api oauth2Api = new OAuth2Api();
         String authorizationUrl = oauth2Api.generateUserAuthorizationUrl(Environment.PRODUCTION, authorizationScopesList, Optional.of("current-page"));
-        System.out.println(authorizationUrl);
+        printDetailedLog(authorizationUrl);
         assertNotNull(authorizationUrl);
     }
 }
