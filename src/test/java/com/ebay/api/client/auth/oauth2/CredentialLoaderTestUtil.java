@@ -57,7 +57,7 @@ public class CredentialLoaderTestUtil {
         Map<String, Map<String, String>> values = new HashMap<>();
 
         if (runtimeParam != null && !runtimeParam.trim().isEmpty()) {
-            System.out.println("Using User Runtime Parameter: " + runtimeParam);
+//            System.out.println("Using User Runtime Parameter: " + runtimeParam);
             isUserCredentialsLoaded = true;
             return new Yaml().load(runtimeParam);
         } else {
@@ -79,7 +79,7 @@ public class CredentialLoaderTestUtil {
             // Trying from Env Variable instead
             propertyValue = System.getenv(varName);
         }
-        System.out.println("Extracted value: " + propertyValue);
+//        System.out.println("Extracted value: " + propertyValue);
         return propertyValue;
     }
 
