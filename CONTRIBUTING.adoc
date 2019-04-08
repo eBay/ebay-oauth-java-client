@@ -84,3 +84,15 @@ We need to make public API changes, including adding new APIs, very carefully to
 If the feature has merit, it will go through a thorough process of API design and review. Any code should come after this.
 
 
+
+
+
+
+	CONTRIBUTING
+	Contributing to a project takes the relationship to a whole new level. Most maintainers opt to provide contribution details in a separate document. This document should be called the CON- TRIBUTING guide and is highlighted for users who are opening issues and pull requests in the repository.
+	Great contributing guides provide the following details:
+	• The types of contributions you accept
+	• The preferred process for proposing and contributing changes
+	• The process of building and testing
+	• An overview of the system architecture and dependencies
+	• The location of most commonly updated files

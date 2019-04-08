@@ -25,7 +25,10 @@ import org.joda.time.DateTime;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.List;
@@ -121,7 +124,7 @@ public class EbayIdTokenValidator {
     private static EbayIdToken extractPayload(String[] tokens) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            String base64decodedPayload = new String(Base64.decodeBase64(tokens[1]));
+            String base64decodedPayload = new String(new Base64(true).decode(tokens[1]));
             return mapper.readValue(base64decodedPayload, EbayIdToken.class);
         } catch (Exception e) {
             throw new JWTExtractException("Exception converting payload to Token info:" + tokens[1] + e.getMessage());
