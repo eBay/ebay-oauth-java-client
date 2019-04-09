@@ -1,6 +1,6 @@
-= eBay OAuth Client Library
+= eBay OAuth Client Library (Java)
 ifdef::env-github[]
-:outfilesuffix: .adoc
+: outfilesuffix: .adoc
 :note-caption: :bulb:
 endif::[]
 :toc:
@@ -36,7 +36,7 @@ Add following to <dependencies/> section of your pom.xml as given below
 == Getting Started
 All interactions with this library can be performed using `OAuth2Api oauth2Api = new OAuth2Api();`
 
-== Library Setup
+== Library Setup and getting started
 1. Ensure you have a config file in your source code of type http://yaml.org/[YAML]. Refer to ebay-config-sample.yaml.
 2. This file would hold all your application credentials such as AppId, DevId, and CertId. Refer to https://developer.ebay.com/api-docs/static/creating-edp-account.html[Creating eBay Developer Account] for details on how to get these credentials.
 3. Once the file is created, call `CredentialUtil.load(new FileInputStream(<your-config-location>));` to load the credentials.
@@ -79,7 +79,35 @@ NOTE: It is also a good practice to send a unique nonce in every request and ver
 == Contribution
 Contributions in terms of patches, features, or comments are always welcome. Refer to link:CONTRIBUTING.adoc[CONTRIBUTING] for guidelines. Submit Github issues for any feature enhancements, bugs, or documentation problems as well as questions and comments.
 
+=== Before you commit
+
+== Libraries used
+1. okhttp
+2. gson
+3. SnakeYAML
+4. joda-time
+5. slf4j
+6. commons-lang
+7. json
+8. jackson-databind
+
+== Versions
+The current version of the library is 1.1.0 and supports the following features.
+1. OAuth 2.0 specification for Access and Refresh tokens
+2. OpenID connect based id_token support
+
+== Developers and Contributors
+1. link:https://github.com/sengopal[@sengopal]
+2. link:https://github.com/tanjav[@tanjav]
+3. link:https://github.com/sonamrks[@sonamrks]
+
+== References
+1. https://developer.ebay.com/api-docs/static/oauth-tokens.html
+2. https://developer.ebay.com/api-docs/static/oauth-quick-ref-user-tokens.html
+3. https://developer.ebay.com/api-docs/static/oauth-gen-app-token.html
+4. https://developer.ebay.com/my/keys
+
 == License
-Copyright (c) 2018 eBay Inc.
+Copyright (c) 2019 eBay Inc.
 
 Use of this source code is governed by a Apache-2.0 license that can be found in the LICENSE file or at https://opensource.org/licenses/Apache-2.0.

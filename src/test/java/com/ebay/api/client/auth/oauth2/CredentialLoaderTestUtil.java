@@ -37,7 +37,7 @@ public class CredentialLoaderTestUtil {
         String runtimeParam = getRuntimeParam("credential_yaml");
 
         if (runtimeParam != null && !runtimeParam.trim().isEmpty()) {
-            System.out.println("Using Runtime Parameter: " + runtimeParam);
+            printDetailedLog("Using Runtime Parameter: " + runtimeParam);
             CredentialUtil.load(runtimeParam);
             isAppCredentialsLoaded = true;
         } else {
@@ -57,7 +57,6 @@ public class CredentialLoaderTestUtil {
         Map<String, Map<String, String>> values = new HashMap<>();
 
         if (runtimeParam != null && !runtimeParam.trim().isEmpty()) {
-//            System.out.println("Using User Runtime Parameter: " + runtimeParam);
             isUserCredentialsLoaded = true;
             return new Yaml().load(runtimeParam);
         } else {
@@ -79,7 +78,6 @@ public class CredentialLoaderTestUtil {
             // Trying from Env Variable instead
             propertyValue = System.getenv(varName);
         }
-//        System.out.println("Extracted value: " + propertyValue);
         return propertyValue;
     }
 
@@ -104,6 +102,13 @@ public class CredentialLoaderTestUtil {
             Map<String, String> credValues = (Map<String, String>) valuesObj;
             CRED_USERNAME = credValues.get("username");
             CRED_PASSWORD = credValues.get("password");
+        }
+    }
+
+    public static void printDetailedLog(String printStmt){
+        String runtimeParam = getRuntimeParam("detail_log");
+        if(Boolean.parseBoolean(runtimeParam)){
+            System.out.println(printStmt);
         }
     }
 }

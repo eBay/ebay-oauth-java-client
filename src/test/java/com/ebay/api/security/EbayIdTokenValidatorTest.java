@@ -40,8 +40,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil.CRED_PASSWORD;
-import static com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil.CRED_USERNAME;
+import static com.ebay.api.client.auth.oauth2.CredentialLoaderTestUtil.*;
 import static com.ebay.api.security.openid.jwt.EbayIdTokenValidator.JWTExtractException;
 import static com.ebay.api.security.openid.jwt.EbayIdTokenValidator.validate;
 import static org.junit.Assert.*;
@@ -125,7 +124,7 @@ public class EbayIdTokenValidatorTest {
 
         String url = null;
         if (driver.getCurrentUrl().contains("id_token=")) {
-            System.out.println("Id Token Obtained");
+            printDetailedLog("Id Token Obtained");
             url = driver.getCurrentUrl();
         } else {
             WebElement agreeBtn = (new WebDriverWait(driver, 10))
@@ -136,7 +135,7 @@ public class EbayIdTokenValidatorTest {
             url = driver.getCurrentUrl();
         }
         driver.quit();
-        System.out.println(url);
+        printDetailedLog(url);
         return url;
     }
 
@@ -196,7 +195,8 @@ public class EbayIdTokenValidatorTest {
         }
 
         assertNotNull(idToken);
-        System.out.println(idToken);
+        printDetailedLog(idToken);
+
         String[] split = idToken.split("\\.");
         String invalidIdToken = split[0] + "." + split[1] + "." + "invalidsignature";
         try {
