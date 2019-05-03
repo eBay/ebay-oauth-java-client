@@ -2,10 +2,6 @@
 language: java
 dist: trusty
 
-env:
-  global:
-    - CODECOV_TOKEN: 75491e14-a163-4190-b535-630ed880a466
-
 os:
   - linux
 
