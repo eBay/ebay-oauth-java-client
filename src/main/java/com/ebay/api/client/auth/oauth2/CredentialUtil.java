@@ -20,8 +20,10 @@ package com.ebay.api.client.auth.oauth2;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.ebay.api.client.auth.oauth2.model.CredentialConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -93,6 +95,36 @@ public class CredentialUtil {
         @SuppressWarnings("unchecked")
 		Map<String, ?> values = (Map<String, Map<String, String>>) yaml.loadAs(yamlStr, Map.class);
         iterateYaml(values);
+    }
+
+    public static void load(CredentialConfig config) {
+        logger.debug("CredentialHelper.load");
+
+        CredentialConfig.EnvironmentInfo sandbox = config.getSandbox();
+        if (sandbox != null) {
+            Environment environment = Environment.SANDBOX;
+            Map<String, String> subValues = new LinkedHashMap<>();
+            subValues.put(CredentialType.APP_ID.configIdentifier, sandbox.getAppId());
+            subValues.put(CredentialType.CERT_ID.configIdentifier, sandbox.getCertId());
+            subValues.put(CredentialType.DEV_ID.configIdentifier, sandbox.getDevId());
+            subValues.put(CredentialType.REDIRECT_URI.configIdentifier, sandbox.getRedirectUri());
+            Credentials credentials = new Credentials(subValues);
+            logger.debug(String.format("adding for %s - %s", environment, credentials.toString()));
+            envCredentialsMap.put(environment, credentials);
+        }
+
+        CredentialConfig.EnvironmentInfo production = config.getProduction();
+        if (production != null) {
+            Environment environment = Environment.PRODUCTION;
+            Map<String, String> subValues = new LinkedHashMap<>();
+            subValues.put(CredentialType.APP_ID.configIdentifier, production.getAppId());
+            subValues.put(CredentialType.CERT_ID.configIdentifier, production.getCertId());
+            subValues.put(CredentialType.DEV_ID.configIdentifier, production.getDevId());
+            subValues.put(CredentialType.REDIRECT_URI.configIdentifier, production.getRedirectUri());
+            Credentials credentials = new Credentials(subValues);
+            logger.debug(String.format("adding for %s - %s", environment, credentials.toString()));
+            envCredentialsMap.put(environment, credentials);
+        }
     }
 
     private static void iterateYaml(Map<String, ?> values) {
