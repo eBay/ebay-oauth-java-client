@@ -75,6 +75,7 @@ class OAuth2Util {
 
     static OAuthResponse handleError(Response response) throws IOException {
         String errorMessage = response.body().string();
+        response.close();
         return new OAuthResponse(errorMessage);
     }
 }

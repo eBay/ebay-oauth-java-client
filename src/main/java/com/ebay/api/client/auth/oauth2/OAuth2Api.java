@@ -83,6 +83,7 @@ public class OAuth2Api {
         if (response.isSuccessful()) {
             logger.debug("Network call to generate new token is successfull");
             OAuthResponse oAuthResponse = OAuth2Util.parseApplicationToken(response.body().string());
+            response.close();
             AccessToken accessToken = oAuthResponse.getAccessToken().get();
             appAccessToken = new TimedCacheValue(oAuthResponse, new DateTime(accessToken.getExpiresOn()));
             appAccessTokenMap.put(environment, appAccessToken);
@@ -134,7 +135,9 @@ public class OAuth2Api {
 
         Response response = client.newCall(request).execute();
         if (response.isSuccessful()) {
-            return OAuth2Util.parseUserToken(response.body().string());
+            String responseBody = response.body().string();
+            response.close();
+            return OAuth2Util.parseUserToken(responseBody);
         } else {
             return OAuth2Util.handleError(response);
         }
