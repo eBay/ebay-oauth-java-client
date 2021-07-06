@@ -84,6 +84,7 @@ public class CredentialUtil {
         Yaml yaml = new Yaml();
         @SuppressWarnings("unchecked")
 		Map<String, ?> values = (Map<String, Map<String, String>>) yaml.loadAs(fis, Map.class);
+        logger.debug(yaml.dump(values));
         iterateYaml(values);
     }
 

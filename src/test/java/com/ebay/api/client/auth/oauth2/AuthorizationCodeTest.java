@@ -142,9 +142,12 @@ public class AuthorizationCodeTest {
 
         WebElement userId = (new WebDriverWait(driver, 10))
                 .until(ExpectedConditions.visibilityOf(driver.findElement(By.cssSelector("input[type='text']"))));
-        WebElement password = driver.findElement(By.cssSelector("input[type='password']"));
 
         userId.sendKeys(CRED_USERNAME);
+        driver.findElement(By.name("signin-continue-btn")).submit();
+
+        WebElement password = (new WebDriverWait(driver, 10))
+                .until(ExpectedConditions.visibilityOf(driver.findElement(By.cssSelector("input[type='password']"))));
         password.sendKeys(CRED_PASSWORD);
         driver.findElement(By.name("sgnBt")).submit();
 
