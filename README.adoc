@@ -80,11 +80,6 @@ Contributions in terms of patches, features, or comments are always welcome. Ref
 7. json
 8. jackson-databind
 
-== Versions
-The current version of the library is 1.1.0 and supports the following features.
-1. OAuth 2.0 specification for Access and Refresh tokens
-2. OpenID connect based id_token support
-
 == Developers and Contributors
 1. link:https://github.com/sengopal[@sengopal]
 2. link:https://github.com/tanjav[@tanjav]
