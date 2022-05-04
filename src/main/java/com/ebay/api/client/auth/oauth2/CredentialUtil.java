@@ -20,6 +20,7 @@ package com.ebay.api.client.auth.oauth2;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -27,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import com.ebay.api.client.auth.oauth2.model.Environment;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 public class CredentialUtil {
     private static Map<Environment, Credentials> envCredentialsMap = new HashMap<>();
@@ -81,7 +84,7 @@ public class CredentialUtil {
 
     public static void load(InputStream fis) {
         logger.debug("CredentialHelper.load");
-        Yaml yaml = new Yaml();
+        Yaml yaml = new Yaml(new Constructor());
         @SuppressWarnings("unchecked")
 		Map<String, ?> values = (Map<String, Map<String, String>>) yaml.loadAs(fis, Map.class);
         logger.debug(yaml.dump(values));
@@ -90,7 +93,7 @@ public class CredentialUtil {
 
     public static void load(String yamlStr) {
         logger.debug("CredentialHelper.load");
-        Yaml yaml = new Yaml();
+        Yaml yaml = new Yaml(new Constructor());
         @SuppressWarnings("unchecked")
 		Map<String, ?> values = (Map<String, Map<String, String>>) yaml.loadAs(yamlStr, Map.class);
         iterateYaml(values);
