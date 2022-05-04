@@ -18,18 +18,15 @@
 
 package com.ebay.api.client.auth.oauth2;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import com.ebay.api.client.auth.oauth2.model.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
-
-import com.ebay.api.client.auth.oauth2.model.Environment;
 import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CredentialUtil {
     private static Map<Environment, Credentials> envCredentialsMap = new HashMap<>();
