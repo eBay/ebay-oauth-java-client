@@ -30,6 +30,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -140,14 +141,14 @@ public class AuthorizationCodeTest {
         driver.get(authorizeUrl);
         Thread.sleep(5000);
 
-        WebElement userId = (new WebDriverWait(driver, 10))
-                .until(ExpectedConditions.visibilityOf(driver.findElement(By.cssSelector("input[type='text']"))));
+        WebElement userId = (new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOf(driver.findElement(By.cssSelector("input[type='text']")))));
 
         userId.sendKeys(CRED_USERNAME);
         driver.findElement(By.name("signin-continue-btn")).submit();
 
-        WebElement password = (new WebDriverWait(driver, 10))
-                .until(ExpectedConditions.visibilityOf(driver.findElement(By.cssSelector("input[type='password']"))));
+        WebElement password = (new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOf(driver.findElement(By.cssSelector("input[type='password']")))));
         password.sendKeys(CRED_PASSWORD);
         driver.findElement(By.name("sgnBt")).submit();
 
@@ -158,8 +159,8 @@ public class AuthorizationCodeTest {
             printDetailedLog("Code Obtained");
             url = driver.getCurrentUrl();
         } else {
-            WebElement agreeBtn = (new WebDriverWait(driver, 10))
-                    .until(ExpectedConditions.visibilityOf(driver.findElement(By.id("submit"))));
+            WebElement agreeBtn = (new WebDriverWait(driver, Duration.ofSeconds(10))
+                    .until(ExpectedConditions.visibilityOf(driver.findElement(By.id("submit")))));
 
             agreeBtn.submit();
             Thread.sleep(5000);
