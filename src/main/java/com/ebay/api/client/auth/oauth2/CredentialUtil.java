@@ -24,9 +24,11 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CredentialUtil {
@@ -82,30 +84,17 @@ public class CredentialUtil {
 
     public static void load(InputStream fis) {
         logger.debug("CredentialHelper.load");
-        Yaml yaml = new Yaml(getSecureConstructorObj());
-        @SuppressWarnings("unchecked")
-		Map<String, ?> values = (Map<String, Map<String, String>>) yaml.loadAs(fis, Map.class);
+        Yaml yaml = new Yaml(new SafeConstructor());
+		Map<String, ?> values = yaml.load(fis);
         logger.debug(yaml.dump(values));
         iterateYaml(values);
     }
 
     public static void load(String yamlStr) {
         logger.debug("CredentialHelper.load");
-        Yaml yaml = new Yaml(getSecureConstructorObj());
-        @SuppressWarnings("unchecked")
-		Map<String, ?> values = (Map<String, Map<String, String>>) yaml.loadAs(yamlStr, Map.class);
+        Yaml yaml = new Yaml(new SafeConstructor());
+		Map<String, ?> values = yaml.load(yamlStr);
         iterateYaml(values);
-    }
-
-    public static Constructor getSecureConstructorObj(){
-        Constructor constructor = new Constructor(Map.class);
-        TypeDescription sandboxUserTypeDesc = new TypeDescription(Map.class);
-        TypeDescription prodUserTypeDesc = new TypeDescription(Map.class);
-        sandboxUserTypeDesc.putMapPropertyType(Environment.SANDBOX.getConfigIdentifier(), String.class, Map.class);
-        prodUserTypeDesc.putMapPropertyType(Environment.PRODUCTION.getConfigIdentifier(), String.class, Map.class);
-        constructor.addTypeDescription(sandboxUserTypeDesc);
-        constructor.addTypeDescription(prodUserTypeDesc);
-        return constructor;
     }
 
     private static void iterateYaml(Map<String, ?> values) {

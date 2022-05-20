@@ -22,6 +22,7 @@ import com.ebay.api.client.auth.oauth2.model.Environment;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -63,26 +64,15 @@ public class CredentialLoaderTestUtil {
             return new Yaml().load(runtimeParam);
         } else {
             //TODO: Create the file ebay-config.yaml using the ebay-config-sample.yaml before running these tests
-            Yaml yaml = new Yaml(getTestSecureConstructor());
+            Yaml yaml = new Yaml(new SafeConstructor());
             try {
-                values = (Map<String, Map<String, String>>) yaml.loadAs(new FileInputStream("src/test/resources/test-config.yaml"), Map.class);
+                values = yaml.load(new FileInputStream("src/test/resources/test-config.yaml"));
                 isUserCredentialsLoaded = true;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
         return values;
-    }
-
-    public static Constructor getTestSecureConstructor(){
-        Constructor constructor = new Constructor(Map.class);
-        TypeDescription sandboxUserTypeDesc = new TypeDescription(Map.class);
-        TypeDescription prodUserTypeDesc = new TypeDescription(Map.class);
-        sandboxUserTypeDesc.putMapPropertyType("sandbox-user", String.class, Map.class);
-        prodUserTypeDesc.putMapPropertyType("production-user", String.class, Map.class);
-        constructor.addTypeDescription(sandboxUserTypeDesc);
-        constructor.addTypeDescription(prodUserTypeDesc);
-        return constructor;
     }
 
     private static String getRuntimeParam(String varName) {
