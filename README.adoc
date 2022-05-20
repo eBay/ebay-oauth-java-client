@@ -68,7 +68,8 @@ This grant type can be performed by simply using `OAuth2Api.getAccessToken()`. U
 == Contribution
 Contributions in terms of patches, features, or comments are always welcome. Refer to link:CONTRIBUTING.adoc[CONTRIBUTING] for guidelines. Submit Github issues for any feature enhancements, bugs, or documentation problems as well as questions and comments.
 
-=== Before you commit
+== Additional Note: Using SnakeYaml in a safe manner
+With the latest release (1.16 and above), `SafeConstructor` is used for Yaml object creation for SnakeYaml. This ensures that only default Java objects would be supported via config. Please ensure there are no tagging of custom classes or any other class in the YAML config files. Refer to https://github.com/Thinkofname/snakeyaml/blob/master/src/main/java/org/yaml/snakeyaml/constructor/SafeConstructor.java[SafeConstructor] for further details.
 
 == Libraries used
 1. okhttp
