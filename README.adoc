@@ -93,6 +93,6 @@ With the latest release (1.16 and above), `SafeConstructor` is used for Yaml obj
 4. https://developer.ebay.com/my/keys
 
 == License
-Copyright (c) 2021 eBay Inc.
+Copyright (c) 2023 eBay Inc.
 
 Use of this source code is governed by a Apache-2.0 license that can be found in the LICENSE file or at https://opensource.org/licenses/Apache-2.0.
