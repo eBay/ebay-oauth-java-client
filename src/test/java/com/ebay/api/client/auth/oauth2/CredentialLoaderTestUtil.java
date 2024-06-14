@@ -19,9 +19,8 @@
 package com.ebay.api.client.auth.oauth2;
 
 import com.ebay.api.client.auth.oauth2.model.Environment;
-import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.FileInputStream;
@@ -64,7 +63,7 @@ public class CredentialLoaderTestUtil {
             return new Yaml().load(runtimeParam);
         } else {
             //TODO: Create the file ebay-config.yaml using the ebay-config-sample.yaml before running these tests
-            Yaml yaml = new Yaml(new SafeConstructor());
+            Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
             try {
                 values = yaml.load(new FileInputStream("src/test/resources/test-config.yaml"));
                 isUserCredentialsLoaded = true;

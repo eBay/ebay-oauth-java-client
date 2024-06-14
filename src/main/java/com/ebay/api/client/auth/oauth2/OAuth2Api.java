@@ -113,6 +113,7 @@ public class OAuth2Api {
         if (state.isPresent()) {
             sb.append("state=").append(state.get());
         }
+        sb.append("auth_type=oauth");
         logger.debug("authorize_url=" + sb.toString());
         return sb.toString();
     }
