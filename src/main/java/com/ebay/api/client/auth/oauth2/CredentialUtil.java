@@ -21,18 +21,16 @@ package com.ebay.api.client.auth.oauth2;
 import com.ebay.api.client.auth.oauth2.model.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CredentialUtil {
-    private static Map<Environment, Credentials> envCredentialsMap = new HashMap<>();
+    private static final Map<Environment, Credentials> envCredentialsMap = new HashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(CredentialUtil.class);
 
     public enum CredentialType {
@@ -84,7 +82,7 @@ public class CredentialUtil {
 
     public static void load(InputStream fis) {
         logger.debug("CredentialHelper.load");
-        Yaml yaml = new Yaml(new SafeConstructor());
+        Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
 		Map<String, ?> values = yaml.load(fis);
         logger.debug(yaml.dump(values));
         iterateYaml(values);
@@ -92,7 +90,7 @@ public class CredentialUtil {
 
     public static void load(String yamlStr) {
         logger.debug("CredentialHelper.load");
-        Yaml yaml = new Yaml(new SafeConstructor());
+        Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
 		Map<String, ?> values = yaml.load(yamlStr);
         iterateYaml(values);
     }

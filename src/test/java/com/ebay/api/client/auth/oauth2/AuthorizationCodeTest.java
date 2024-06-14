@@ -23,10 +23,13 @@ import com.ebay.api.client.auth.oauth2.model.OAuthResponse;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.IOException;
@@ -147,8 +150,19 @@ public class AuthorizationCodeTest {
         userId.sendKeys(CRED_USERNAME);
         driver.findElement(By.name("signin-continue-btn")).submit();
 
-        WebElement password = (new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.visibilityOf(driver.findElement(By.cssSelector("input[type='password']")))));
+        Wait<WebDriver> wait = new FluentWait<>(driver)
+            .withTimeout(Duration.ofSeconds(30))
+            .pollingEvery(Duration.ofSeconds(3))
+            .ignoring(StaleElementReferenceException.class);
+
+        WebElement password = wait.until(webDriver -> webDriver.findElement(
+            By.cssSelector("input[type='password']")));
+
+        if (password == null) {
+            throw new RuntimeException(
+                "Failed to find password field after multiple attempts");
+        }
+
         password.sendKeys(CRED_PASSWORD);
         driver.findElement(By.name("sgnBt")).submit();
 

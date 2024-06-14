@@ -85,12 +85,12 @@ With the latest release (1.16 and above), `SafeConstructor` is used for Yaml obj
 1. link:https://github.com/sengopal[@sengopal]
 2. link:https://github.com/tanjav[@tanjav]
 3. link:https://github.com/sonamrks[@sonamrks]
+4. link:https://github.com/LokeshRishi[@LokeshRishi]
 
 == References
-1. https://developer.ebay.com/api-docs/static/oauth-tokens.html
-2. https://developer.ebay.com/api-docs/static/oauth-quick-ref-user-tokens.html
-3. https://developer.ebay.com/api-docs/static/oauth-gen-app-token.html
-4. https://developer.ebay.com/my/keys
+1. https://developer.ebay.com/api-docs/static/oauth-token-types.html
+2. https://developer.ebay.com/api-docs/static/oauth-tokens.html
+3. https://developer.ebay.com/my/keys
 
 == License
 Copyright (c) 2023 eBay Inc.
