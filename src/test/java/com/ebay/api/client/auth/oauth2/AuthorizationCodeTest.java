@@ -53,8 +53,8 @@ public class AuthorizationCodeTest {
     @BeforeClass
     public static void testSetup() {
         CredentialLoaderTestUtil.commonLoadCredentials(EXECUTION_ENV);
-        assertNotNull(CRED_USERNAME, "Please check if test-config.yaml is setup correctly");
-        assertNotNull(CRED_PASSWORD, "Please check if test-config.yaml is setup correctly");
+        assertNotNull("Please check if test-config.yaml is setup correctly", CRED_USERNAME);
+        assertNotNull("Please check if test-config.yaml is setup correctly", CRED_PASSWORD);
     }
 
     @Test
@@ -168,7 +168,7 @@ public class AuthorizationCodeTest {
 
         Thread.sleep(5000);
 
-        String url = null;
+        String url;
         if (driver.getCurrentUrl().contains("code=")) {
             printDetailedLog("Code Obtained");
             url = driver.getCurrentUrl();
