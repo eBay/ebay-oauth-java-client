@@ -111,7 +111,7 @@ public class OAuth2Api {
         sb.append("redirect_uri=").append(credentials.get(REDIRECT_URI)).append("&");
         sb.append("scope=").append(scope).append("&");
         if (state.isPresent()) {
-            sb.append("state=").append(state.get());
+            sb.append("state=").append(state.get()).append("&");
         }
         sb.append("auth_type=oauth");
         logger.debug("authorize_url=" + sb.toString());
